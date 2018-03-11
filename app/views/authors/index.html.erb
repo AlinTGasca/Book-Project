@@ -1,0 +1,10 @@
+<div class="container-fluid"><h1>
+  All authors
+</h1>
+
+<br>
+<br>
+<% @authors.each do |author| %>
+  <%= link_to author.firstName+ " " + author.lastName, author_path(author) %>
+  <br>
+  <% end %></div>

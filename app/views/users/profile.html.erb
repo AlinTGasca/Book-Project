@@ -1,0 +1,15 @@
+<div class="container-fluid"><h1><%= @user.username %></h1>
+
+<br>
+  <% if @user.avatar.exists? %>
+  <%= image_tag @user.avatar.url(:medium) %>
+    <%else%> <%= image_tag('No_Image_Available.png', size: "300x300",alt: 'no_image') %>
+<% end %>
+  <br>
+  Average list score:  <% if @avg_rat.nan? %>
+    Nothing
+    <% else %>
+    <%= @avg_rat%>
+    <% end %>
+  <br>
+  <%= link_to 'Lista', list_path %></div>

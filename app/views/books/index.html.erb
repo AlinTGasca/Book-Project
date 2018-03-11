@@ -1,0 +1,10 @@
+<div class="container-fluid"><h1>
+  All books
+</h1>
+
+<br>
+<br>
+<% @books.each do |book| %>
+  <%= link_to book.title, book_path(book) %>
+  <br>
+  <% end %></div>

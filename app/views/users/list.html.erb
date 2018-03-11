@@ -1,0 +1,90 @@
+<div class="container-fluid">
+  <% if (@books) %>
+    <h1>Currently Reading</h1>
+  <% @books.each do |book| %>
+      <% if book.status == "Currently Reading" %>
+      <%= link_to book.title, book_path(book.book_id) %>
+    Nota: <% if book.score!=nil %>
+        <%= book.score%>
+      <% else %>
+        Nothing
+      <% end %>
+        <% if user_signed_in? %>
+      <% if current_user.id == User.find_by_uid!(params[:id]).id %>
+          <%= link_to 'Edit Details', list_book_details_path(book.id) %>
+     <%= link_to 'Remove', remove_list_path(book.id),
+      method: :delete, :onclick=> "return confirm('Are you sure you want to remove this book from your list?')"%>
+<% end
+end%>
+    <br>
+    <% end
+      end
+       end%>
+  <h1>Completed</h1>
+  <% if (@books) %>
+  <% @books.each do |book| %>
+    <% if book.status == "Completed" %>
+      <%= link_to book.title, book_path(book.book_id) %>
+      Nota: <% if book.score!=nil %>
+        <%= book.score%>
+      <% else %>
+        Nothing
+      <% end %>
+        <% if user_signed_in? %>
+      <% if User.find_by_uid!(current_user.id) == User.find_by_uid!(params[:id]) %>
+          <%= link_to 'Edit Details', list_book_details_path(book.id) %>
+        <%= link_to 'Remove', remove_list_path(book.id),
+                    method: :delete, :onclick=> "return confirm('Are you sure you want to remove this book from your list?')"%>
+      <% end
+         end %>
+      <br>
+    <% end
+       end
+       end%>
+  <h1>Dropped</h1>
+  <% if (@books) %>
+  <% @books.each do |book| %>
+    <% if book.status == "Dropped" %>
+      <%= link_to book.title, book_path(book.book_id) %>
+      Nota: <% if book.score!=nil %>
+        <%= book.score%>
+      <% else %>
+        Nothing
+      <% end %>
+        <% if user_signed_in? %>
+      <% if User.find_by_uid!(current_user.id) == User.find_by_uid!(params[:id]) %>
+          <%= link_to 'Edit Details', list_book_details_path(book.id) %>
+        <%= link_to 'Remove', remove_list_path(book.id),
+                    method: :delete, :onclick=> "return confirm('Are you sure you want to remove this book from your list?')"%>
+      <% end
+          end%>
+      <br>
+    <% end
+       end
+       end%>
+
+  <h1>Plan to Read</h1>
+  <% if (@books) %>
+  <% @books.each do |book| %>
+    <% if book.status == "Plan to Read" %>
+      <%= link_to book.title, book_path(book.book_id) %>
+      Nota: <% if book.score!=nil %>
+        <%= book.score%>
+      <% else %>
+        Nothing
+      <% end %>
+        <% if user_signed_in? %>
+      <% if User.find_by_uid!(current_user.id) == User.find_by_uid!(params[:id]) %>
+          <%= link_to 'Edit Details', list_book_details_path(book.id) %>
+        <%= link_to 'Remove', remove_list_path(book.id),
+                    method: :delete, :onclick=> "return confirm('Are you sure you want to remove this book from your list?')"%>
+      <% end
+         end
+      %>
+      <br>
+    <% end
+       end
+       end%>
+
+
+</div>

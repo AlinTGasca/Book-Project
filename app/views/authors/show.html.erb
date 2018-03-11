@@ -1,0 +1,50 @@
+<p>
+  <h3>
+    <% if @author.firstName%>
+  <%= @author.firstName + " " + @author.lastName %>
+      <% else %>
+    <%= @author.lastName %>
+      <% end %>
+  </h3>
+<div class="container-fluid"><% if current_user.try(:admin?) %>
+<%= link_to 'Edit', edit_author_path(@author.id) %> |
+<%= link_to 'Destroy', author_delete_path(@author.id),
+            method: :delete,
+            :onclick=> "return confirm('Are you sure you want to delete this author from the database?')" %>
+  <% end %>
+</p>
+  <br>
+  <% if @author.avatar.exists? %>
+    <%= image_tag @author.avatar.url(:medium) %>
+  <%else%> <%= image_tag('No_Image_Available.png', size: "300x300",alt: 'no_image') %>
+  <% end %>
+<p>
+ <strong> Born:</strong> <% if (@author.birth) %>
+  <%= @author.birth%>
+    <% else %>
+    Unknown
+    <% end %>
+  <br>
+  <% if (@author.death) %>
+ <strong> Died: </strong><%= @author.death%>
+    <%end%>
+  <br>
+  <strong>Short Bios:</strong>
+  <% if (@author.bios!=""&&@author.bios)%>
+  <%= @author.bios %>
+    <% else %>
+  Unknown
+    <% end %>
+</p>
+
+<p>
+  <strong>Books written: </strong> <% if (@books) %>
+    <% @books.each do |book| %>
+      <% if @books.last != book %>
+      <%= link_to book.title, book_path(book) %> ,
+        <% else %>
+        <%= link_to book.title, book_path(book) %>
+    <% end
+      end
+       end%>
+</p></div>

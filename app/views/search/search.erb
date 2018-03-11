@@ -1,0 +1,28 @@
+<div class="container-fluid"><h1>
+  Search results:
+</h1>
+
+  <br>
+  <br>
+  <%if @results.count > 0 %>
+  <% if params['search_for'] == 'Books' %>
+  <% @results.each do |book| %>
+    <%= link_to book.title, book_path(book) %>
+    <br>
+    <% end %>
+      <% else if  params['search_for'] == 'Authors' %>
+        <% @results.each do |author| %>
+          <%= link_to author.firstName+ " " + author.lastName, author_path(author) %>
+          <br>
+        <% end %>
+      <% else if params['search_for'] == 'Users' %>
+        <% @results.each do |user| %>
+          <%= link_to user.username, user_profile_path(user.username) %>
+          <br>
+        <% end %>
+    <% end %>
+  <% end %>
+      <%end%>
+  <%else %>
+    No results founds.
+    <% end %></div>

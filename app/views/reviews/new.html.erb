@@ -1,0 +1,27 @@
+<div class="container-fluid"><h1>New Review for <%= @book.title %></h1>
+  <%= form_tag(review_create_path,method: :post) do %>
+    <% if @review.errors.any? %>
+      <div id="error_explanation">
+        <h2>
+          <%= pluralize(@review.errors.count, "error") %> prohibited
+          this review from being saved:
+        </h2>
+        <ul>
+          <% @review.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <br>
+    <%= label_tag 'Select Score: '%>
+    <%= select_tag 'rating', options_for_select( @ratings.map {|s| [if s.score!=nil
+                                                                       s.score
+                                                                     else '(Nothing)'
+                                                                     end,s.id]}) %>
+    <br>
+    <%= label_tag 'Review Content: ' %>
+    <%= text_area_tag 'content' %>
+    <br>
+    <%= submit_tag 'Add review' %>
+  <% end %></div>

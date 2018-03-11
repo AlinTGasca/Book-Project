@@ -1,0 +1,17 @@
+<% if user_signed_in? %>
+
+    <div><h1>Edit book: </h1><br>
+      <%= label_tag "Book Title" %> <%=link_to @book.title, book_path(@book.book_id) %><br>
+      <%= form_tag(book_update_list_adv_path,method: :patch) do %>
+        <p><%= label_tag"Score" %>
+        <%= select_tag 'rating', options_for_select( @ratings.map {|s| [if s.score!=nil
+                                                                             s.score
+                                                                           else '(Nothing)'
+                                                                           end,s.id]}, @book_rating ) %></p>
+        <p><%= label_tag "Your Status: " %>
+        <%= select_tag 'shelves', options_for_select( @shelves.map {|s| [s.status,s.id]}, @book_shelf ) %></p>
+        <%= submit_tag "Update" %></div>
+        <%= link_to 'Remove', remove_list_path(params[:id_user_book]),
+                    method: :delete, :onclick=> "return confirm('Are you sure you want to remove this book from your list?')"%>
+      <% end %>
+<%end%>

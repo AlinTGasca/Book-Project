@@ -1,0 +1,48 @@
+<%= form_with model: @author, local: true do |form| %>
+
+  <% if @author.errors.any? %>
+    <div id="error_explanation">
+      <h2>
+        <%= pluralize(@author.errors.count, "error") %> prohibited
+        this author from being saved:
+      </h2>
+      <ul>
+        <% @author.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <p>
+    <%= form.label "First Name" %><br>
+    <%= form.text_field :firstName %>
+  </p>
+
+  <p>
+    <%= form.label "Last Name" %><br>
+    <%= form.text_field :lastName %>
+  </p>
+
+  <p>
+    <%= form.label :bios %><br>
+    <%= form.text_area :bios %>
+  </p>
+
+  <p>
+    <%= form.label "Birth Date" %><br>
+    <%= form.date_field :birth, as: :date, value: form.object.try(:strftime,"%m/%d/%Y")%>
+  </p>
+
+  <p>
+    <%= form.label "Death Date" %><br>
+    <%= form.date_field :death %>
+  </p>
+
+  <div class="field">
+    <%= form.label :avatar %><br />
+    <%= form.file_field :avatar %><br />
+  </div>
+
+  <%= form.submit %>
+<% end %>

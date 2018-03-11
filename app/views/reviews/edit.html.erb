@@ -1,0 +1,27 @@
+<div class="container-fluid"><h1>Edit your Review for <%= @book.title %></h1>
+  <%= form_for(@review, url: review_edit_path(@review.id), html: {method: "patch"}) do |f| %>
+    <% if @review.errors.any? %>
+      <div id="error_explanation">
+        <h2>
+          <%= pluralize(@review.errors.count, "error") %> prohibited
+          this review from being saved:
+        </h2>
+        <ul>
+          <% @review.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <br>
+    <%= f.label 'Select Score: '%>
+    <%= f.select 'rating', options_for_select( @ratings.map {|s| [if s.score!=nil
+                                                                      s.score
+                                                                    else '(Nothing)'
+                                                                    end,s.id]},@review.rating_id) %>
+    <br>
+    <%= f.label 'Review Content: ' %>
+    <%= f.text_area 'content' %>
+    <br>
+    <%= f.submit 'Save review' %>
+  <% end %></div>
