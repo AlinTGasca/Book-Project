@@ -47,4 +47,26 @@
     <% end
       end
        end%>
-</p></div>
+
+</p>
+  <br>
+  Comments:
+  <br>
+  <% @author.comments.each do |comment| %>
+    ------------------------
+    <br>
+    <% if User.find(comment.user_id).avatar.exists? %>
+    <%= image_tag User.find(comment.user_id).avatar.url(:mini) %>
+  <%else%> <%= image_tag('No_Image_Available.png', size: "100x100",alt: 'no_image') %>
+    <% end %>
+    <%= link_to comment.user.username, user_profile_path(comment.user.username) %>
+    <%= comment.body%>
+    <br>
+    <em>Posted at <%=comment.created_at%></em>
+    <br>
+    ------------------------
+    <br>
+  <% end %>
+
+
+</div>

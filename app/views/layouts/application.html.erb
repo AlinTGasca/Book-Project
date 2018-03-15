@@ -27,7 +27,7 @@
     <% end %>
   <p class="nav"><%= link_to 'Books', books_path, :class => 'nav-link' %> |  <%= link_to 'Authors', authors_path, :class => 'nav-link' %> | <%= link_to 'Users', :user_index, :class => 'nav-link' %>
     <% if current_user.try(:admin?) %>
-     | <%= link_to 'New Book', new_book_path %> | <%= link_to 'New Author', new_author_path %>
+     | <%= link_to 'New Book', new_book_path %> | <%= link_to 'New Author', new_author_path %> | <%= link_to 'Admin Panel', rails_admin_path %>
     <% end %>
   </p>
     <%= form_tag(search_path,method: :get) do %>

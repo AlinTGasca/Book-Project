@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   devise_for :users, :sign_out_via => [ :get, :delete ]
   resources :authors
   resources :books
@@ -20,6 +21,8 @@ Rails.application.routes.draw do
   get 'myreviews/:review_id/delete', to: 'reviews#destroy', as: 'review_delete'
   get 'myreviews/:review_id/like', to: 'reviews#like', as: 'review_like'
   get 'myreviews/:review_id/dislike', to: 'reviews#dislike', as: 'review_dislike'
+
+
 
   root 'books#index'
 
