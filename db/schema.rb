@@ -10,17 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180528132746) do
+ActiveRecord::Schema.define(version: 20180530131930) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "activities", force: :cascade do |t|
     t.string "trackable_type"
-    t.integer "trackable_id"
+    t.bigint "trackable_id"
     t.string "owner_type"
-    t.integer "owner_id"
+    t.bigint "owner_id"
     t.string "key"
     t.text "parameters"
     t.string "recipient_type"
-    t.integer "recipient_id"
+    t.bigint "recipient_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["owner_id", "owner_type"], name: "index_activities_on_owner_id_and_owner_type"
@@ -61,8 +64,8 @@ ActiveRecord::Schema.define(version: 20180528132746) do
   end
 
   create_table "books_to_authors", force: :cascade do |t|
-    t.integer "author_id"
-    t.integer "book_id"
+    t.bigint "author_id"
+    t.bigint "book_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["author_id"], name: "index_books_to_authors_on_author_id"
@@ -70,8 +73,8 @@ ActiveRecord::Schema.define(version: 20180528132746) do
   end
 
   create_table "books_to_genres", force: :cascade do |t|
-    t.integer "book_id"
-    t.integer "genre_id"
+    t.bigint "book_id"
+    t.bigint "genre_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["book_id"], name: "index_books_to_genres_on_book_id"
@@ -89,8 +92,8 @@ ActiveRecord::Schema.define(version: 20180528132746) do
   create_table "comments", force: :cascade do |t|
     t.text "body"
     t.string "commentable_type"
-    t.integer "commentable_id"
-    t.integer "user_id"
+    t.bigint "commentable_id"
+    t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id"
@@ -107,7 +110,7 @@ ActiveRecord::Schema.define(version: 20180528132746) do
   create_table "editions", force: :cascade do |t|
     t.string "title"
     t.date "pubslished"
-    t.integer "book_id"
+    t.bigint "book_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "avatar_file_name"
@@ -116,13 +119,13 @@ ActiveRecord::Schema.define(version: 20180528132746) do
     t.datetime "avatar_updated_at"
     t.string "country", default: "f"
     t.string "publisher"
-    t.decimal "pages"
+    t.integer "pages"
     t.index ["book_id"], name: "index_editions_on_book_id"
   end
 
   create_table "friendships", force: :cascade do |t|
     t.string "friendable_type"
-    t.integer "friendable_id"
+    t.bigint "friendable_id"
     t.integer "friend_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -139,8 +142,8 @@ ActiveRecord::Schema.define(version: 20180528132746) do
 
   create_table "messages", force: :cascade do |t|
     t.text "body"
-    t.integer "conversation_id"
-    t.integer "user_id"
+    t.bigint "conversation_id"
+    t.bigint "user_id"
     t.boolean "read", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -155,9 +158,9 @@ ActiveRecord::Schema.define(version: 20180528132746) do
   end
 
   create_table "recommandations", force: :cascade do |t|
-    t.integer "first_book_id"
-    t.integer "second_book_id"
-    t.integer "user_id"
+    t.bigint "first_book_id"
+    t.bigint "second_book_id"
+    t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["first_book_id"], name: "index_recommandations_on_first_book_id"
@@ -167,27 +170,27 @@ ActiveRecord::Schema.define(version: 20180528132746) do
 
   create_table "reviews", force: :cascade do |t|
     t.text "content"
-    t.integer "rating_id"
+    t.bigint "rating_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "book_id"
-    t.integer "user_id"
+    t.bigint "book_id"
+    t.bigint "user_id"
     t.index ["book_id"], name: "index_reviews_on_book_id"
     t.index ["rating_id"], name: "index_reviews_on_rating_id"
     t.index ["user_id"], name: "index_reviews_on_user_id"
   end
 
   create_table "shelves", force: :cascade do |t|
+    t.string "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "status"
   end
 
   create_table "topics", force: :cascade do |t|
     t.string "title"
     t.string "body"
-    t.integer "category_id"
-    t.integer "user_id"
+    t.bigint "category_id"
+    t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_topics_on_category_id"
@@ -213,7 +216,6 @@ ActiveRecord::Schema.define(version: 20180528132746) do
     t.string "avatar_content_type"
     t.integer "avatar_file_size"
     t.datetime "avatar_updated_at"
-    t.string "chat_status", default: "offline"
     t.string "first_name"
     t.string "last_name"
     t.date "birthday"
@@ -227,22 +229,24 @@ ActiveRecord::Schema.define(version: 20180528132746) do
   end
 
   create_table "users_to_books", force: :cascade do |t|
-    t.integer "user_id"
-    t.integer "book_id"
+    t.bigint "user_id"
+    t.bigint "book_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "rating_id"
-    t.integer "shelf_id"
+    t.bigint "ratings_id"
+    t.bigint "rating_id"
     t.date "start_reading"
     t.date "end_reading"
     t.string "notes"
+    t.bigint "shelf_id"
     t.index ["book_id"], name: "index_users_to_books_on_book_id"
     t.index ["rating_id"], name: "index_users_to_books_on_rating_id"
+    t.index ["ratings_id"], name: "index_users_to_books_on_ratings_id"
     t.index ["shelf_id"], name: "index_users_to_books_on_shelf_id"
     t.index ["user_id"], name: "index_users_to_books_on_user_id"
   end
 
-  create_table "votes", force: :cascade do |t|
+  create_table "votes", id: :serial, force: :cascade do |t|
     t.string "votable_type"
     t.integer "votable_id"
     t.string "voter_type"
@@ -256,4 +260,16 @@ ActiveRecord::Schema.define(version: 20180528132746) do
     t.index ["voter_id", "voter_type", "vote_scope"], name: "index_votes_on_voter_id_and_voter_type_and_vote_scope"
   end
 
+  add_foreign_key "books_to_genres", "books"
+  add_foreign_key "books_to_genres", "genres"
+  add_foreign_key "comments", "users"
+  add_foreign_key "editions", "books"
+  add_foreign_key "messages", "conversations"
+  add_foreign_key "messages", "users"
+  add_foreign_key "recommandations", "users"
+  add_foreign_key "reviews", "books"
+  add_foreign_key "reviews", "users"
+  add_foreign_key "users_to_books", "ratings"
+  add_foreign_key "users_to_books", "ratings", column: "ratings_id"
+  add_foreign_key "users_to_books", "shelves"
 end

@@ -3,8 +3,8 @@
     <%= @category.name %>
   </h1>
     <div class="dropdown" style="float: right; padding-top: 25px;">
-    <label><%= link_to 'New topic', topic_new_path, class: 'link' %>,
-      <%= link_to 'Back to forum', forum_path, class: 'link' %></label></div></div>
+      <% if user_signed_in? %> <label><%= link_to 'New topic', topic_new_path, class: 'link' %>,</label><% end %>
+      <label><%= link_to 'Back to forum', forum_path, class: 'link' %></label></div></div>
   <table style="width:100%; text-align: left">
   <tr>
     <th class="th-left-first">Topic title</th>

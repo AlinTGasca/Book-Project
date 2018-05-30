@@ -17,23 +17,23 @@
           <% end %> <strong>Title:</strong> <%=link_to rec.second_book.title , book_path(rec.second_book)%>
           <br>
           <em>Recommended by <%= rec.count_sec %> users.</em>
-          <br><% _users = Recommandation.where(first_book_id: rec.first_book_id, second_book_id: rec.second_book_id).pluck(:user_id) %>
-         <% if _users.count > 0 %>
-          <% _users.each do |user| %>
-            <% _usr = User.find(user)%>
+          <br><% _rec_users = Recommandation.where(first_book_id: rec.first_book_id, second_book_id: rec.second_book_id) %>
+         <% if _rec_users.count > 0 %>
+          <% _rec_users.each do |user| %>
+            <% _usr = User.find(user.user_id)%>
               <% if _usr == current_user %>
-                <% _destroy = 1 %>
+                <% _destroy = _usr %>
                 <% end %>
               <%= link_to _usr.username, user_profile_path(_usr) %>
-              <% if user != _users.last %>,
+              <% if user != _rec_users.last %>,
                 <% end %>
             <% end %>
             <% end %>
 
           <br>
           <br>
-          <%if _destroy == 1 %>
-            <%= link_to 'Remove Recommendation', rec_destroy_path(rec),
+          <%if _destroy %>
+            <%= link_to 'Remove Recommendation', rec_destroy_path(_destroy),
             :onclick => "return confirm('Are you sure you want to remove your recommandation?')" %>
           <% end %>
           <br>

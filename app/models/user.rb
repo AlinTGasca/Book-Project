@@ -20,7 +20,13 @@ class User < ApplicationRecord
 
 
   def self.find_by_uid!(uid)
-    User.find_by!("username = :p OR id = :p", p: uid)
+
+    if User.exists?(:username => uid)
+      User.find_by(:username => uid)
+    else
+      User.find(uid)
+    end
+
   end
 
   GENDER_TYPES = ["Unspecified","Male", "Female"]

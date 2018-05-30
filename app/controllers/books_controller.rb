@@ -175,7 +175,7 @@ class BooksController < ApplicationController
         @book_list = UsersToBook.joins(:book, :user).where(book_id: params[:id],user_id: current_user.id).first
       end
     end
-    @recs =Recommandation.select('*,count(second_book_id) as count_sec').includes(:second_book).where(first_book_id: @book.id).group(:second_book_id).order('count_sec desc')
+    @recs =Recommandation.select('recommandations.first_book_id,recommandations.second_book_id,count(second_book_id) as count_sec').includes(:second_book).where(first_book_id: @book.id).group(:second_book_id,:first_book_id).order('count_sec desc')
     @recs = @recs.paginate(page: params[:page], per_page: 2)
   end
 
@@ -206,7 +206,7 @@ class BooksController < ApplicationController
       end
       params[:book][:genres].each do |genre|
         if (genre!="")
-          BooksToGenre.new(:book_id=>@book.id,:genre_id=>genre.id).save
+          BooksToGenre.new(:book_id=>@book.id,:genre_id=>genre).save
         end
       end
       redirect_to @book, :notice => "The book has been created."

@@ -81,17 +81,17 @@ end
 
   def profile
     @user = User.find_by_uid!(params[:id])
-    ratings = UsersToBook.joins(:user, :book, :rating, :shelf).where(user_id: User.find_by_uid!(params[:id]).id).where.not(ratings: {score: nil}, shelves: {status: 'Plan to Read'}).select("ratings.score")
+    ratings = UsersToBook.joins(:user, :book, :rating, :shelf).where(user_id: @user.id).where.not(ratings: {score: nil}, shelves: {status: 'Plan to Read'}).select("ratings.score")
     @avg_rat = 0
     ratings.each do |rating|
       @avg_rat = @avg_rat + rating.score
     end
     @comments = @user.comments
     @avg_rat = @avg_rat.to_f / ratings.size
-    @completed = UsersToBook.joins(:user, :shelf).where(user_id: User.find_by_uid!(params[:id]).id, shelves: {status: "Completed"}).count
-    @p2r = UsersToBook.joins(:user, :shelf).where(user_id: User.find_by_uid!(params[:id]).id, shelves: {status: "Plan To Read"}).count
-    @reading = UsersToBook.joins(:user, :shelf).where(user_id: User.find_by_uid!(params[:id]).id, shelves: {status: "Currently Reading"}).count
-    @dropped = UsersToBook.joins(:user, :shelf).where(user_id: User.find_by_uid!(params[:id]).id, shelves: {status: "Dropped"}).count
+    @completed = UsersToBook.joins(:user, :shelf).where(user_id: @user.id, shelves: {status: "Completed"}).count
+    @p2r = UsersToBook.joins(:user, :shelf).where(user_id: @user.id, shelves: {status: "Plan to Read"}).count
+    @reading = UsersToBook.joins(:user, :shelf).where(user_id: @user.id, shelves: {status: "Currently Reading"}).count
+    @dropped = UsersToBook.joins(:user, :shelf).where(user_id: @user.id, shelves: {status: "Dropped"}).count
     if params[:sort] == "like"
       @comments = @comments.sort {|p1, p2| p2.get_likes.size <=> p1.get_likes.size}
     elsif params[:sort] == "dislike"
@@ -104,8 +104,8 @@ end
       @comments = @comments.sort {|p1, p2| p2.get_likes.size - p2.get_dislikes.size <=> p1.get_likes.size - p1.get_dislikes.size}
     end
     @comments = @comments.paginate(page: params[:page], per_page: 2)
-    @status = UsersToBook.joins(:book, :shelf).select("books.id").where(user_id: User.find_by_uid!(params[:id]).id).group('shelves.status').count
-    @ratings = UsersToBook.joins(:book, :rating).select("books.id").where(user_id: User.find_by_uid!(params[:id]).id).group('ratings.score').count
+    @status = UsersToBook.joins(:book, :shelf).select("books.id").where(user_id: @user.id).group('shelves.status').count
+    @ratings = UsersToBook.joins(:book, :rating).select("books.id").where(user_id: @user.id).group('ratings.score').count
     @reviews = Review.where(user_id: @user.id)
     @review_sum = 0
     @reviews.each do |review|
@@ -124,10 +124,10 @@ end
 
   def list
     @user = User.find_by_uid!(params[:id])
-    @reading = UsersToBook.includes(:user, :book, :rating, :shelf).where(user_id: User.find_by_uid!(params[:id]).id, shelves: {status: "Currently Reading"})
-    @completed = UsersToBook.includes(:user, :book, :rating, :shelf).where(user_id: User.find_by_uid!(params[:id]).id, shelves: {status: "Completed"})
-    @dropped = UsersToBook.includes(:user, :book, :rating, :shelf).where(user_id: User.find_by_uid!(params[:id]).id, shelves: {status: "Dropped"})
-    @p2r = UsersToBook.includes(:user, :book, :rating, :shelf).where(user_id: User.find_by_uid!(params[:id]).id, shelves: {status: "Plan to Read"})
+    @reading = UsersToBook.includes(:user, :book, :rating, :shelf).where(user_id: @user.id, shelves: {status: "Currently Reading"})
+    @completed = UsersToBook.includes(:user, :book, :rating, :shelf).where(user_id: @user.id, shelves: {status: "Completed"})
+    @dropped = UsersToBook.includes(:user, :book, :rating, :shelf).where(user_id: @user.id, shelves: {status: "Dropped"})
+    @p2r = UsersToBook.includes(:user, :book, :rating, :shelf).where(user_id: @user.id, shelves: {status: "Plan to Read"})
     if params[:sort_r] == 'title_r'
       @reading = @reading.sort {|p1, p2| p1.book.title <=> p2.book.title}
     elsif params[:sort_r] == 'title_inv_r'

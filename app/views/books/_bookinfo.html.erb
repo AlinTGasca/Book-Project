@@ -57,7 +57,7 @@
     <% end %>
   <% end %>
   <br>
-  <strong>Score: </strong>
+  <strong>Score: </strong><% @avg_rat = Book.score(@book.id)%>
   <% if @avg_rat.nan? %>
     Nothing
   <% else %>

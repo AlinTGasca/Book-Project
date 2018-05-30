@@ -22,11 +22,16 @@
         <td><%= category.topics.count %></td>
 
         <td><%= Category.replies(category.id)%></td>
+        <% if category.topics.last %>
         <% _post = Category.last_post(category.id) %>
         <td><%=link_to _post.title, topic_path(_post) %>,
           <% _last = Topic.last_post(_post.id)%>
         at <%= _last.created_at %>,
           by <%=link_to _last.user.username, user_profile_path(_last.user.username)%></td>
+          <% else %>
+          <td>No posts</td>
+        <% end %>
+
       </tr>
     <% end %>
   </table></div>
