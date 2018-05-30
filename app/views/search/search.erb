@@ -1,28 +1,170 @@
-<div class="container-fluid"><h1>
-  Search results:
-</h1>
+<div>
+<div class="container-text">
+  <div class="container-title">
+  <h1  class="same-row-title">
+    <% if params[:search]!=nil %>
+  Search results for "<%= params[:search]%>" in <%= params[:search_for] %>
+      <% else %>
+    All <%= params[:search_for] %>
+      <% end %>
+  </h1>
+    <% if params['search_for'] == 'Books' %>
+      <label class="dropdown" style="float: right; padding-top: 25px;">
+        <div class="dropbtn link"><% if params[:genre] == nil || (not Genre.exists?(params[:genre]))%>
+            Select Genre: ▼
+            <% else %>
+            Selected Genre: <%= Genre.find(params[:genre]).name %>
+            <% end %></div> <div class="dropdown-content">
+        <% @genres.each do |genre| %>
+        <%= link_to genre.name, search_path(:search=>params[:search],:search_for=>params[:search_for],:genre=>genre.id,:sort=>'title') %>
+          <% end %>
+      </div>
+      </label>
+      <%end%></div>
 
-  <br>
-  <br>
   <%if @results.count > 0 %>
+    <table width="100%">
   <% if params['search_for'] == 'Books' %>
+
+        <tr>
+          <th>Image</th>
+          <th><% if params[:sort]!='title' %>
+              <%= link_to 'Title ▼',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'title'),class: "link"%>
+              <%else%>  <%= link_to 'Title ▲',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'title_inv'),class: "link"%>
+              <% end %></th>
+          <th>Description</th>
+          <th><% if params[:sort]!='published' %>
+            <%= link_to 'Published ▼',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'published'),class: "link"%>
+    <%else%>  <%= link_to 'Published ▲',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'published_inv'),class: "link"%>
+    <% end %></th>
+          <th><% if params[:sort]!='score' %>
+              <%= link_to 'Score ▼',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'score'),class: "link"%>
+            <%else%>  <%= link_to 'Score ▲',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'score_inv'),class: "link"%>
+            <% end %></th>
+          <th><% if params[:sort]!='popularity' %>
+              <%= link_to 'Members ▼',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'popularity'),class: "link"%>
+            <%else%>  <%= link_to 'Members ▲',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'popularity_inv'),class: "link"%>
+            <% end %></th>
+          <th>Reviews</th>
+          <th>Comments</th>
+        </tr>
   <% @results.each do |book| %>
-    <%= link_to book.title, book_path(book) %>
-    <br>
+        <tr>  <td>
+        <% if book.avatar.exists? %>
+        <%= image_tag book.avatar.url(:thumb) %>
+        <%else%> <%= image_tag('No_Image_Available.png', size: "100x100",alt: 'no_image') %>
+        <% end %></td>
+        <td><%= link_to book.title, book_path(book) %></td>
+        <td><%= truncate(book.description, :length => 80) %>
+        <% if book.description.length > 80 %>
+              <%=link_to 'Read more', book_path(book) %>
+        <% end %></td>
+          <td> <% if book.published %>
+              <%= book.published %>
+            <% else %>
+              ?
+            <% end %>
+          </td>
+        <td><% @avg_rat = Book.score(book.id)%>
+        <%= (@avg_rat).round(2) %></td>
+        <td><%= UsersToBook.joins(:book).where(book_id: book.id).count %></td>
+        <td><%= Review.joins(:book).where(book_id: book.id).count %></td>
+        <td><%= book.comments.count %></td>
+          </tr>
     <% end %>
       <% else if  params['search_for'] == 'Authors' %>
+          <tr>
+            <th>Image</th>
+            <th><% if params[:sort]!='fname' %>
+                <%= link_to 'First Name ▼',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'fname'),class: "link"%>
+              <%else%>  <%= link_to 'First Name ▲',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'fname_inv'),class: "link"%>
+              <% end %></th>
+            <th><% if params[:sort]!='lname' %>
+                <%= link_to 'Last Name ▼',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'lname'),class: "link"%>
+              <%else%>  <%= link_to 'Last Name ▲',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'lname_inv'),class: "link"%>
+              <% end %></th>
+            <th>Bios</th>
+            <th><% if params[:sort]!='birth' %>
+                <%= link_to 'Birth Date ▼',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'birth'),class: "link"%>
+              <%else%>  <%= link_to 'Birth Date ▲',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'birth_inv'),class: "link"%>
+              <% end %></th>
+            <th>Comments</th>
+          </tr>
         <% @results.each do |author| %>
-          <%= link_to author.firstName+ " " + author.lastName, author_path(author) %>
-          <br>
+         <tr> <td><% if author.avatar.exists? %>
+             <%= image_tag author.avatar.url(:thumb) %>
+           <%else%> <%= image_tag('No_Image_Available.png', size: "100x100",alt: 'no_image') %>
+             <% end %></td>
+           <td><%= link_to author.firstName, author_path(author) %></td>
+           <td><%= link_to author.lastName, author_path(author) %></td>
+           <td><%= truncate(author.bios, :length => 80) %>
+             <% if author.bios.length > 80 %>
+               <%=link_to 'Read more', author_path(author) %>
+             <% end %></td>
+           <td><% if author.birth %>
+               <%= author.birth %>
+             <% else %>
+               ?
+             <% end %></td>
+
+          <td><%= author.comments.count%></td>
+         </tr>
         <% end %>
+
+
       <% else if params['search_for'] == 'Users' %>
+            <tr>
+              <th>Avatar</th>
+              <th><% if params[:sort]!='uname' %>
+                  <%= link_to 'Username ▼',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'uname'),class: "link"%>
+                <%else%>  <%= link_to 'Username ▲',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'uname_inv'),class: "link"%>
+                <% end %></th>
+              <th><% if params[:sort]!='join' %>
+                  <%= link_to 'Joined ▼',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'join'),class: "link"%>
+                <%else%>  <%= link_to 'Joined ▲',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'join_inv'),class: "link"%>
+                <% end %></th>
+              <th><% if params[:sort]!='last_sign' %>
+                  <%= link_to 'Last Online ▼',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'last_sign'),class: "link"%>
+                <%else%>  <%= link_to 'Last Online In ▲',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'last_sign_inv'),class: "link"%>
+                <% end %></th>
+              <th><% if params[:sort]!='reviews' %>
+                  <%= link_to 'Reviews ▼',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'reviews'),class: "link"%>
+                <%else%>  <%= link_to 'Reviews ▲',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'reviews_inv'),class: "link"%>
+                <% end %></th>
+              <th><% if params[:sort]!='reviewscore' %>
+                  <%= link_to 'Reviews Popularity ▼',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'reviewscore'),class: "link"%>
+                <%else%>  <%= link_to 'Reviews Popularity ▲',search_path(:search=>params[:search],:search_for=>params[:search_for],:sort=>'reviewscore_inv'),class: "link"%>
+                <% end %></th>
+              <th>Comments On Profile</th>
+            </tr>
         <% @results.each do |user| %>
-          <%= link_to user.username, user_profile_path(user.username) %>
-          <br>
+              <tr>
+                <td><% if user.avatar.exists? %>
+                  <%= image_tag user.avatar.url(:thumb) %>
+                <%else%> <%= image_tag('No_Image_Available.png', size: "100x100",alt: 'no_image') %>
+                <% end %></td>
+                <td><%= link_to user.username, user_profile_path(user.username) %></td>
+                <td><%= user.created_at%></td>
+                <td><%= user.last_seen%></td>
+                <td><%= Review.where(user_id: user.id).count %></td>
+                <td> <% _reviews = Review.where(user_id: user.id)
+                _sum = 0
+                    _reviews.each do |review|
+                        _sum = _sum + review.get_likes.size
+                        _sum = _sum - review.get_dislikes.size
+                    end
+                %>
+                <%= _sum %></td>
+                <td><%= user.comments.count %></td>
+              </tr>
         <% end %>
     <% end %>
   <% end %>
       <%end%>
+    </table>
+    <%= will_paginate @results , :class=>"centred flickr_pagination"%>
   <%else %>
-    No results founds.
-    <% end %></div>
+    <div class="div-padding"> No results founds. </div>
+    <% end %>
+</div>
+</div>

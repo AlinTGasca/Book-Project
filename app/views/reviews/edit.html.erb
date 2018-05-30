@@ -1,5 +1,9 @@
-<div class="container-fluid"><h1>Edit your Review for <%= @book.title %></h1>
-  <%= form_for(@review, url: review_edit_path(@review.id), html: {method: "patch"}) do |f| %>
+<div class="container-form"><h1>Edit your Review for <%=link_to @book.title,book_path(@book) %></h1>
+  <% if @book.avatar.exists? %>
+    <%= image_tag @book.avatar.url(:medium) %>
+  <%else%> <%= image_tag('No_Image_Available.png', size: "300x300",alt: 'no_image') %>
+  <% end %>
+  <%= form_for(@review, url: review_update_path(@review.id), html: {method: "patch"}) do |f| %>
     <% if @review.errors.any? %>
       <div id="error_explanation">
         <h2>
@@ -13,15 +17,17 @@
         </ul>
       </div>
     <% end %>
-    <br>
-    <%= f.label 'Select Score: '%>
+    <div class="row">
+    <%= f.label 'Select Score ', class: "label-form col-25 "%>
     <%= f.select 'rating', options_for_select( @ratings.map {|s| [if s.score!=nil
                                                                       s.score
                                                                     else '(Nothing)'
-                                                                    end,s.id]},@review.rating_id) %>
+                                                                    end,s.id]},@review.rating_id),{}, class: "input-form col-75 " %>
+    </div>
+    <div class="row">
+    <%= f.label 'Review Content ', class: "label-form col-25 " %>
+    <%= f.text_area 'content' ,class: "input-form col-75 "%>
+    </div>
     <br>
-    <%= f.label 'Review Content: ' %>
-    <%= f.text_area 'content' %>
-    <br>
-    <%= f.submit 'Save review' %>
+    <%= f.submit 'Save review', class: "big-button link" %>
   <% end %></div>

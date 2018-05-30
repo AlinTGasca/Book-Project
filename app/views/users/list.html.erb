@@ -1,90 +1,266 @@
-<div class="container-fluid">
-  <% if (@books) %>
-    <h1>Currently Reading</h1>
-  <% @books.each do |book| %>
-      <% if book.status == "Currently Reading" %>
-      <%= link_to book.title, book_path(book.book_id) %>
-    Nota: <% if book.score!=nil %>
-        <%= book.score%>
-      <% else %>
-        Nothing
-      <% end %>
-        <% if user_signed_in? %>
-      <% if current_user.id == User.find_by_uid!(params[:id]).id %>
-          <%= link_to 'Edit Details', list_book_details_path(book.id) %>
-     <%= link_to 'Remove', remove_list_path(book.id),
-      method: :delete, :onclick=> "return confirm('Are you sure you want to remove this book from your list?')"%>
-<% end
-end%>
-    <br>
+<%= render 'userinfo' %>
+<div class="container-reviews">
+  <% if @reading.count > 0 %>
+<div class="container-text">
+  <div class="container-title"><h3 class>Currently Reading</h3></div>
+  <table width="100%">
+    <tr>
+    <th>Image</th>
+      <th><% if params[:sort_r]!='title_r' %>
+        <%= link_to 'Title ▼',list_path(:id=>params[:id],:sort_r=>'title_r',:sort_c=>params[:sort_c],:sort_d=>params[:sort_d],:sort_p=>params[:sort_p]),class: "link"%>
+      <%else%>  <%= link_to 'Title ▲',list_path(:id=>params[:id],:sort_r=>'title_inv_r',:sort_c=>params[:sort_c],:sort_d=>params[:sort_d],:sort_p=>params[:sort_p]),class: "link"%>
+      <% end %></th>
+      <th><% if params[:sort_r]!='rating_r' %>
+          <%= link_to 'Score ▼',list_path(:id=>params[:id],:sort_r=>'rating_r',:sort_c=>params[:sort_c],:sort_d=>params[:sort_d],:sort_p=>params[:sort_p]),class: "link"%>
+        <%else%>  <%= link_to 'Score ▲',list_path(:id=>params[:id],:sort_r=>'rating_inv_r',:sort_c=>params[:sort_c],:sort_d=>params[:sort_d],:sort_p=>params[:sort_p]),class: "link"%>
+        <% end %></th>
+      <th>Started Reading</th>
+      <th>Finished Reading</th>
+      <th>Notes</th>
+      <% if user_signed_in? %>
+        <% if User.find_by_uid!(current_user.id) == User.find_by_uid!(params[:id]) %>
+      <th>Edit Details</th>
+          <% end end %>
+  </tr>
+  <% @reading.each do |book| %>
+      <% if book.shelf.status == "Currently Reading" %>
+          <tr>  <td>
+            <% if book.book.avatar.exists? %>
+              <%= image_tag book.book.avatar.url(:thumb) %>
+            <%else%> <%= image_tag('No_Image_Available.png', size: "100x100",alt: 'no_image') %>
+            <% end %></td>
+            <td><%= link_to book.book.title, book_path(book.book.id) %></td>
+            <td><% if book.rating.score!=nil %>
+                <%= book.rating.score%>
+              <% else %>
+                Nothing
+              <% end %></td>
+            <td><% if book.start_reading %>
+                <%= book.start_reading %>
+              <% else %>
+                Unspecified
+              <% end %></td>
+            <td><% if book.end_reading %>
+                <%= book.end_reading %>
+              <% else %>
+                Unspecified
+              <% end %></td>
+            <td><% if book.notes %>
+                <%= book.notes %>
+              <% else %>
+                Unspecified
+              <% end %></td>
+            <% if user_signed_in? %>
+              <% if User.find_by_uid!(current_user.id) == User.find_by_uid!(params[:id]) %>
+                <td>
+                  <%= link_to '✎', list_book_details_path(book.id),class:"icon" %>
+                  <%= link_to '🗑', remove_list_path(book.id),
+                               :onclick=> "return confirm('Are you sure you want to remove this book from your list?')",class:"icon"%>
+                </td>
+                <% end
+                   end %>
+              </tr>
+        <% end %>
+    <% end %>
+</table>
+</div>
+    <% end %>
+  <% if @completed.count > 0 %>
+<div class="container-text">
+  <div class="container-title"><h3>Completed</h3></div>
+  <table width="100%">
+    <tr>
+      <th>Image</th>
+      <th><% if params[:sort_c]!='title_c' %>
+        <%= link_to 'Title ▼',list_path(:id=>params[:id],:sort_c=>'title_c',:sort_r=>params[:sort_r],:sort_d=>params[:sort_d],:sort_p=>params[:sort_p]),class: "link"%>
+      <%else%>  <%= link_to 'Title ▲',list_path(:id=>params[:id],:sort_c=>'title_inv_c',:sort_r=>params[:sort_r],:sort_d=>params[:sort_d],:sort_p=>params[:sort_p]),class: "link"%>
+      <% end %></th>
+      <th><% if params[:sort_c]!='rating_c' %>
+          <%= link_to 'Score ▼',list_path(:id=>params[:id],:sort_c=>'rating_c'),class: "link"%>
+        <%else%>  <%= link_to 'Score ▲',list_path(:id=>params[:id],:sort_c=>'rating_inv_c',:sort_r=>params[:sort_r],:sort_d=>params[:sort_d],:sort_p=>params[:sort_p]),class: "link"%>
+        <% end %></th>
+      <th>Started Reading</th>
+      <th>Finished Reading</th>
+      <th>Notes</th>
+      <% if user_signed_in? %>
+        <% if User.find_by_uid!(current_user.id) == User.find_by_uid!(params[:id]) %>
+          <th>Edit Details</th>
+        <% end end %>
+    </tr>
+  <% @completed.each do |book| %>
+    <% if book.shelf.status == "Completed" %>
+          <tr>  <td>
+            <% if book.book.avatar.exists? %>
+              <%= image_tag book.book.avatar.url(:thumb) %>
+            <%else%> <%= image_tag('No_Image_Available.png', size: "100x100",alt: 'no_image') %>
+            <% end %></td>
+            <td><%= link_to book.book.title, book_path(book.book.id) %></td>
+            <td><% if book.rating.score!=nil %>
+                <%= book.rating.score%>
+              <% else %>
+                Nothing
+              <% end %></td>
+            <td><% if book.start_reading %>
+                <%= book.start_reading %>
+              <% else %>
+                Unspecified
+              <% end %></td>
+            <td><% if book.end_reading %>
+                <%= book.end_reading %>
+              <% else %>
+                Unspecified
+              <% end %></td>
+            <td><% if book.notes %>
+                <%= book.notes %>
+              <% else %>
+                Unspecified
+              <% end %></td>
+            <% if user_signed_in? %>
+              <% if User.find_by_uid!(current_user.id) == User.find_by_uid!(params[:id]) %>
+                <td>
+                  <%= link_to '✎', list_book_details_path(book.id),class:"icon" %>
+                  <%= link_to '🗑', remove_list_path(book.id),
+                               :onclick=> "return confirm('Are you sure you want to remove this book from your list?')",class:"icon"%>
+                </td>
+              <% end
+                 end %>
+          </tr>
     <% end
-      end
        end%>
-  <h1>Completed</h1>
-  <% if (@books) %>
-  <% @books.each do |book| %>
-    <% if book.status == "Completed" %>
-      <%= link_to book.title, book_path(book.book_id) %>
-      Nota: <% if book.score!=nil %>
-        <%= book.score%>
-      <% else %>
-        Nothing
-      <% end %>
+  </table>
+</div>
+    <% end %>
+  <% if @dropped.count > 0 %>
+<div class="container-text">
+  <div class="container-title"><h3>Dropped</h3></div>
+    <table width="100%">
+      <tr>
+        <th>Image</th>
+        <th><% if params[:sort_d]!='title_d' %>
+        <%= link_to 'Title ▼',list_path(:id=>params[:id],:sort_d=>'title_d',:sort_r=>params[:sort_r],:sort_c=>params[:sort_c],:sort_p=>params[:sort_p]),class: "link"%>
+      <%else%>  <%= link_to 'Title ▲',list_path(:id=>params[:id],:sort_d=>'title_inv_d',:sort_r=>params[:sort_r],:sort_c=>params[:sort_c],:sort_p=>params[:sort_p]),class: "link"%>
+      <% end %></th>
+        <th><% if params[:sort_d]!='rating_d' %>
+          <%= link_to 'Score ▼',list_path(:id=>params[:id],:sort_d=>'rating_d',:sort_r=>params[:sort_r],:sort_c=>params[:sort_c],:sort_p=>params[:sort_p]),class: "link"%>
+        <%else%>  <%= link_to 'Score ▲',list_path(:id=>params[:id],:sort_d=>'rating_inv_d',:sort_r=>params[:sort_r],:sort_c=>params[:sort_c],:sort_p=>params[:sort_p]),class: "link"%>
+        <% end %></th>
+        <th>Started Reading</th>
+        <th>Finished Reading</th>
+        <th>Notes</th>
         <% if user_signed_in? %>
-      <% if User.find_by_uid!(current_user.id) == User.find_by_uid!(params[:id]) %>
-          <%= link_to 'Edit Details', list_book_details_path(book.id) %>
-        <%= link_to 'Remove', remove_list_path(book.id),
-                    method: :delete, :onclick=> "return confirm('Are you sure you want to remove this book from your list?')"%>
-      <% end
-         end %>
-      <br>
+          <% if User.find_by_uid!(current_user.id) == User.find_by_uid!(params[:id]) %>
+            <th>Edit Details</th>
+          <% end end %>
+      </tr>
+  <% @dropped.each do |book| %>
+    <% if book.shelf.status == "Dropped" %>
+        <tr>  <td>
+          <% if book.book.avatar.exists? %>
+            <%= image_tag book.book.avatar.url(:thumb) %>
+          <%else%> <%= image_tag('No_Image_Available.png', size: "100x100",alt: 'no_image') %>
+          <% end %></td>
+          <td><%= link_to book.book.title, book_path(book.book.id) %></td>
+          <td><% if book.rating.score!=nil %>
+              <%= book.rating.score%>
+            <% else %>
+              Nothing
+            <% end %></td>
+          <td><% if book.start_reading %>
+              <%= book.start_reading %>
+            <% else %>
+              Unspecified
+            <% end %></td>
+          <td><% if book.end_reading %>
+              <%= book.end_reading %>
+            <% else %>
+              Unspecified
+            <% end %></td>
+          <td><% if book.notes %>
+              <%= book.notes %>
+            <% else %>
+              Unspecified
+            <% end %></td>
+          <% if user_signed_in? %>
+            <% if User.find_by_uid!(current_user.id) == User.find_by_uid!(params[:id]) %>
+              <td>
+                <%= link_to '✎', list_book_details_path(book.id),class:"icon" %>
+                <%= link_to '🗑', remove_list_path(book.id),
+                             :onclick=> "return confirm('Are you sure you want to remove this book from your list?')",class:"icon"%>
+              </td>
+            <% end
+               end %>
+        </tr>
     <% end
-       end
        end%>
-  <h1>Dropped</h1>
-  <% if (@books) %>
-  <% @books.each do |book| %>
-    <% if book.status == "Dropped" %>
-      <%= link_to book.title, book_path(book.book_id) %>
-      Nota: <% if book.score!=nil %>
-        <%= book.score%>
-      <% else %>
-        Nothing
-      <% end %>
-        <% if user_signed_in? %>
-      <% if User.find_by_uid!(current_user.id) == User.find_by_uid!(params[:id]) %>
-          <%= link_to 'Edit Details', list_book_details_path(book.id) %>
-        <%= link_to 'Remove', remove_list_path(book.id),
-                    method: :delete, :onclick=> "return confirm('Are you sure you want to remove this book from your list?')"%>
-      <% end
-          end%>
-      <br>
+  </table>
+</div>
+<% end %>
+  <% if @p2r.count>0 %>
+<div class="container-text">
+  <div class="container-title"><h3>Plan to Read</h3></div>
+  <table width="100%">
+    <tr>
+      <th>Image</th>
+      <th><% if params[:sort_p]!='title_p' %>
+        <%= link_to 'Title ▼',list_path(:id=>params[:id],:sort_p=>'title_p',:sort_r=>params[:sort_r],:sort_c=>params[:sort_c],:sort_d=>params[:sort_d]),class: "link"%>
+      <%else%>  <%= link_to 'Title ▲',list_path(:id=>params[:id],:sort_p=>'title_inv_p',:sort_r=>params[:sort_r],:sort_c=>params[:sort_c],:sort_d=>params[:sort_d]),class: "link"%>
+      <% end %></th>
+      <th><% if params[:sort_p]!='rating_p' %>
+          <%= link_to 'Score ▼',list_path(:id=>params[:id],:sort_p=>'rating_p',:sort_r=>params[:sort_r],:sort_c=>params[:sort_c],:sort_d=>params[:sort_d]),class: "link"%>
+        <%else%>  <%= link_to 'Score ▲',list_path(:id=>params[:id],:sort_p=>'rating_inv_p',:sort_r=>params[:sort_r],:sort_c=>params[:sort_c],:sort_d=>params[:sort_d]),class: "link"%>
+        <% end %></th>
+      <th>Started Reading</th>
+      <th>Finished Reading</th>
+      <th>Notes</th>
+      <% if user_signed_in? %>
+        <% if User.find_by_uid!(current_user.id) == User.find_by_uid!(params[:id]) %>
+          <th>Edit Details</th>
+        <% end end %>
+    </tr>
+  <% @p2r.each do |book| %>
+    <% if book.shelf.status == "Plan to Read" %>
+        <tr>  <td>
+          <% if book.book.avatar.exists? %>
+            <%= image_tag book.book.avatar.url(:thumb) %>
+          <%else%> <%= image_tag('No_Image_Available.png', size: "100x100",alt: 'no_image') %>
+          <% end %></td>
+          <td><%= link_to book.book.title, book_path(book.book.id) %></td>
+          <td><% if book.rating.score!=nil %>
+              <%= book.rating.score%>
+            <% else %>
+              Nothing
+            <% end %></td>
+          <td><% if book.start_reading %>
+            <%= book.start_reading %>
+              <% else %>
+              Unspecified
+              <% end %></td>
+          <td><% if book.end_reading %>
+              <%= book.end_reading %>
+            <% else %>
+              Unspecified
+            <% end %></td>
+          <td><% if book.notes %>
+              <%= book.notes %>
+            <% else %>
+              Unspecified
+            <% end %></td>
+          <% if user_signed_in? %>
+            <% if User.find_by_uid!(current_user.id) == User.find_by_uid!(params[:id]) %>
+              <td>
+                <%= link_to '✎', list_book_details_path(book.id),class:"icon" %>
+                <%= link_to '🗑', remove_list_path(book.id),
+                             :onclick=> "return confirm('Are you sure you want to remove this book from your list?')",class:"icon"%>
+              </td>
+            <% end
+               end %>
+        </tr>
     <% end
-       end
        end%>
-
-  <h1>Plan to Read</h1>
-  <% if (@books) %>
-  <% @books.each do |book| %>
-    <% if book.status == "Plan to Read" %>
-      <%= link_to book.title, book_path(book.book_id) %>
-      Nota: <% if book.score!=nil %>
-        <%= book.score%>
-      <% else %>
-        Nothing
-      <% end %>
-        <% if user_signed_in? %>
-      <% if User.find_by_uid!(current_user.id) == User.find_by_uid!(params[:id]) %>
-          <%= link_to 'Edit Details', list_book_details_path(book.id) %>
-        <%= link_to 'Remove', remove_list_path(book.id),
-                    method: :delete, :onclick=> "return confirm('Are you sure you want to remove this book from your list?')"%>
-      <% end
-         end
-      %>
-      <br>
-    <% end
-       end
-       end%>
-
-
+  </table>
+</div>
+    <% end %>
+  <% if @reading.count + @completed.count + @dropped.count + @p2r.count == 0 %>
+  <div class="container-text">No books have been added to this list so far.</div>
+  <% end %>
 </div>

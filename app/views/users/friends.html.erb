@@ -1,0 +1,20 @@
+<div>
+<%= render 'userinfo' %>
+
+<div class="container-reviews container-text">
+  <div class="container-title"><h4>Friends (<%= @friends.count %>)</h4></div>
+  <div class="div-padding">
+    <% @friends.each do |friend| %>
+      <figure class="fig-pic-new centred">
+        <% if friend.avatar.exists? %>
+          <%= image_tag friend.avatar.url(:thumb) %>
+        <%else%> <%= image_tag('No_Image_Available.png', size: "100x100",alt: 'no_image') %>
+        <% end %>
+        <figcaption style="font-size: 14px">
+          <%= link_to friend.username, user_profile_path(friend.username) %>
+        </figcaption>
+      </figure>
+    <% end %>
+  </div>
+</div>
+</div>

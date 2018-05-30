@@ -1,0 +1,26 @@
+<div class="container-form"><h1>New topic in <%=link_to @category.name, @category, class: "link" %></h1>
+  <%= form_tag(topic_create_path,method: :post) do %>
+    <% if @topic.errors.any? %>
+      <div id="error_explanation">
+        <h2>
+          <%= pluralize(@topic.errors.count, "error") %> prohibited
+          this topic from being saved:
+        </h2>
+        <ul>
+          <% @topic.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <div class="row">
+      <%= label_tag 'Topic Title ',nil, class: "label-form col-25 " %>
+      <%= text_field_tag 'title',nil,class: "input-form col-75 " %>
+    </div>
+    <div class= "row">
+      <%= label_tag 'Topic Content ',nil, class: "label-form col-25 " %>
+      <%= text_area_tag 'body',nil,class: "input-form col-75 " %>
+    </div>
+    <br>
+    <%= submit_tag 'Create topic', class: "big-button link" %>
+  <% end %></div>

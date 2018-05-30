@@ -1,0 +1,37 @@
+<div>
+  <%= render 'userinfo' %>
+  <div class="container-reviews">
+    <div class="container-title-new">
+      <h4>Forum activity</h4>
+    </div>
+    <% if @posts.count > 0 %>
+      <% @posts.each do |activity| %>
+        <% if activity.trackable %>
+          <div class="container-text div-padding">
+            <% if activity.key=="comment.commented_on_topic" %>
+            <%= link_to activity.owner.username %> replied on the topic
+            <%=link_to activity.trackable.commentable.title, topic_path(activity.trackable.commentable.id) %>.
+            <br>
+            <%= simple_format activity.trackable.body %>
+            <%elsif activity.key=="topic.topic" %>
+              <%= link_to activity.owner.username %> created the topic  <%= link_to activity.trackable.title, user_profile_path(activity.trackable) %>
+              in the category <%= link_to activity.trackable.category.name, category_path(activity.trackable.category) %>.
+              <br>
+              <%= simple_format activity.trackable.body %>
+              <% end %>
+            <br>
+            <em>Added at <%= activity.created_at %></em>
+            <br>
+          </div>
+        <% elsif activity.trackable_type=="Comment"
+             Comment.delete_activities(activity.trackable_id)
+           elsif activity.trackable_type=="Topic"
+             Topic.delete_activities(activity.trackable_id)
+           end %>
+      <% end %>
+      <div class="container-text"><%= will_paginate @posts , :class=>"centred flickr_pagination"%></div>
+    <% else %>
+      <div class="container-text"> No recommandations made by this user so far.</div>
+    <% end %>
+  </div>
+</div>

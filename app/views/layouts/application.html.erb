@@ -2,41 +2,115 @@
 <html>
   <head>
     <title>BooksTreasury</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+    <%= stylesheet_link_tag "application" %>
   </head>
 
   <body>
-  <% if notice %>
-    <p class="alert alert-success"><%= notice %></p>
-  <% end %>
-  <% if alert %>
-    <p class="alert alert-danger"><%= alert %></p>
-  <% end %>
+  <header>
 
-
-  <p class="nav">
+    <div class="nav-container">
+    <div class="nav">
+      <ul>
+        <li class="updown">
+  <div class="nav">
+  <ul>
+    <li class="usr"><%= link_to image_tag('icon.png', size: "30x30",alt: 'no_image'), root_path %> <%=link_to 'BookTreasury', root_path, class: "link" %></li>
+   <div class="search-container">
+     <li>
+    <ul>
+      <li class="usr-blk dropdown link"><% if user_signed_in? %>
+          <% if User.find(current_user.id).avatar.exists? %>
+            <%= image_tag User.find(current_user.id).avatar.url(:mini) %>
+          <%else%> <%= image_tag('No_Image_Available.png', size: "30x30",alt: 'no_image') %>
+            <% end %><%= current_user.username %>
+          <div class="dropdown-content large">
+          <%= link_to 'My profile', user_profile_path(current_user.username) %>
+          <%= link_to 'Edit profile', edit_user_registration_path %>
+          <%= link_to 'My book list', list_path(current_user.username) %>
+         <script>
     <% if user_signed_in? %>
-      Logged in as <strong><%= current_user.username %></strong>.
-      <%= link_to 'My profile', user_profile_path(current_user.username), :class => 'nav-link' %> |
-      <%= link_to 'Edit profile', edit_user_registration_path, :class => 'nav-link' %> |
-      <%= link_to "Logout", destroy_user_session_path,:method => :delete, :class => 'nav-link'  %>
-    <% else %>
-      <%= link_to "Sign up", new_user_registration_path, :class => 'nav-link'  %> |
-      <%= link_to "Login", new_user_session_path, :class => 'nav-link'  %>
+    $(function () {
+        function update_trackdata() {
+        var chat = <%= Conversation.unread_messages(current_user.id) %>
+            console.log(chat);
+            return false;
+        };
+        var interval = setInterval(update_trackdata, 3000);
+    });
     <% end %>
-  <p class="nav"><%= link_to 'Books', books_path, :class => 'nav-link' %> |  <%= link_to 'Authors', authors_path, :class => 'nav-link' %> | <%= link_to 'Users', :user_index, :class => 'nav-link' %>
+</script>   <%= link_to 'My reviews', user_reviews_path(current_user.username) %>
+            <%= link_to 'My friends', user_friends_path(current_user.username) %>
+            <%= link_to 'My recommandations', user_recs_path(current_user.username) %>
+            <%= link_to 'My forum activity', user_forum_path(current_user.username) %>
+          </div>
+
+          </li>
+
+
+          <li class="usr"><%= link_to 'Friend Requests('+current_user.requested_friends.count.to_s+')', friend_requests_path, :class => 'nav-link' %>
+
+          <li class="usr"><%= link_to 'Chat('+Conversation.unread_messages(current_user.id).to_s+')', conversations_path, :class => 'nav-link' %>
+
+          <li class="usr"><%= link_to "Logout", destroy_user_session_path, :class => 'nav-link'  %></li>
+        <% else %>
+          <li class="usr"><%= link_to "Sign up", new_user_registration_path, :class => 'nav-link'  %></li>
+          <li class="usr"><%= link_to "Login", new_user_session_path, :class => 'nav-link'  %></li>
+        <% end %>
+        </ul>
+     </li>
+    </div>
+  </ul>
+  </div>
+        </li>
+
+    <li class="updown">
+    <div class="nav">
+      <ul>
+    <li class="list"><%= link_to 'Books', books_path, :class => 'nav-link' %></li>
+    <li class="list"><%= link_to 'Authors', authors_path, :class => 'nav-link' %></li>
+    <li class="list"><%= link_to 'Users', :user_index, :class => 'nav-link' %></li>
+        <li class="list"><%= link_to 'Forum', forum_path, :class => 'nav-link' %></li>
     <% if current_user.try(:admin?) %>
-     | <%= link_to 'New Book', new_book_path %> | <%= link_to 'New Author', new_author_path %> | <%= link_to 'Admin Panel', rails_admin_path %>
+          <li class="list dropdown"><div class="nav-link">Administration</div>
+
+            <div class="dropdown-content medium">
+      <%= link_to 'New Book', new_book_path %>
+      <%= link_to 'New Author', new_author_path  %>
+       <%= link_to 'Admin Panel', rails_admin_path, target: :_blank  %>
+            </div>
+          </li>
     <% end %>
-  </p>
-    <%= form_tag(search_path,method: :get) do %>
-        <%= select_tag 'search_for', options_for_select( ['Books','Authors','Users'] ) %>
-        <%= text_field_tag 'search' %>
-        <%= submit_tag "Search" %>
-      </p>
-    <% end %>
+
+
+    <div class="search-container">
+    <li><%= form_tag(search_path,method: :get) do %>
+        <ul>
+          <li><%= select_tag 'search_for', options_for_select( ['Books','Authors','Users'] ) ,:class => 'search-for'%></li>
+          <li><%= text_field_tag 'search',"" ,:class => 'search'%></li>
+          <li><%= submit_tag "Search" ,:class => 'search-button'%></li>
+        </ul>
+     <% end %></li>
+    </div>
+    </ul>
+    </div>
+    </li>
+      </ul>
+    </div>
+    </div>
+
+  </header>
+<div class="margin-top">
+    <% if notice %>
+      <p class="alert alert-success"><%= notice %></p>
+    <% elsif alert %>
+      <p class="alert alert-danger"><%= alert %></p>
+      <% end %>
+  <div style="padding-left: 30px; padding-right: 30px;">
     <%= yield %>
-    </p>
+  </div>
+</div>
+
+
   </body>
 </html>

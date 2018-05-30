@@ -1,0 +1,53 @@
+<div class="container-form"><h1>Edit your Edition for <%=link_to @book.title,book_path(@book) %></h1>
+  <% if @book.avatar.exists? %>
+    <%= image_tag @book.avatar.url(:medium) %>
+  <%else%> <%= image_tag('No_Image_Available.png', size: "300x300",alt: 'no_image') %>
+  <% end %>
+  <%= form_for(@edition, url: edition_update_path(@edition.id), html: {method: "patch"}) do |f| %>
+    <% if @edition.errors.any? %>
+      <div id="error_explanation">
+        <h2>
+          <%= pluralize(@edition.errors.count, "error") %> prohibited
+          this edition from being saved:
+        </h2>
+        <ul>
+          <% @edition.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class= "row">
+    <%= f.label 'Edition Title *', class: "label-form col-25 " %>
+    <%= f.text_field :title, class: "input-form col-75" %>
+    </div>
+    <div class= "row">
+    <%= f.label "Published on ", class: "label-form col-25 " %>
+    <%= f.date_field :pubslished, class: "input-form col-75", value: try(:strftime,"%m/%d/%Y")%>
+    </div>
+
+    <div class= "row">
+      <%= f.label :country, class: "label-form col-25 " %>
+      <%= country_select("edition", "country", {}, { :class => 'input-form select-form col-75' }) %>
+    </div>
+
+    <div class= "row">
+      <%= f.label "Published by ", class: "label-form col-25 " %>
+      <%= f.text_field :publisher, class: "input-form col-75" %>
+    </div>
+
+    <div class= "row">
+      <%= f.label "Number of pages ", class: "label-form col-25 " %>
+      <%= f.number_field :pages, class: "input-form col-75" %>
+    </div>
+
+    <div class= "row">
+    <%= f.label :avatar, class: "label-form col-25 " %><br />
+    <%= f.file_field :avatar, { :class => 'search-button col-75' } %><br />
+    </div>
+    <div class= "row">
+      <em class="label-form col-35">The fields marked with '*' are required.</em>
+    </div>
+    <%= f.submit 'Save edition', class: "big-button link" %>
+  <% end %></div>

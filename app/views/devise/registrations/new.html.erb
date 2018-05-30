@@ -1,40 +1,71 @@
-<div class="container-fluid"><h2>Sign up</h2>
 
+<div class="container-form"><h2>Sign up</h2>
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
   <%= devise_error_messages! %>
 
-
-
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true %>
+  <div class= "row">
+    <%= f.label 'Email *', class: "label-form col-25 " %>
+    <%= f.email_field :email, autofocus: true, class: "input-form col-75" %>
   </div>
 
-  <div class="field">
-    <%= f.label :username %><br />
-    <%= f.text_field :username, autocomplete: "off" %>
+  <div class= "row">
+    <%= f.label 'Username *', class: "label-form col-25 " %>
+    <%= f.text_field :username, autocomplete: "off", class: "input-form col-75" %>
   </div>
 
-  <div class="field">
-    <%= f.label :password %>
+  <div class= "row">
+    <%= f.label 'Password *', class: "label-form col-25 " %>
+    <%= f.password_field :password, autocomplete: "off", class: "input-form col-75" %>
     <% if @minimum_password_length %>
-    <em>(<%= @minimum_password_length %> characters minimum)</em>
-    <% end %><br />
-    <%= f.password_field :password, autocomplete: "off" %>
+      <em>(<%= @minimum_password_length %> characters minimum)</em>
+    <% end %>
   </div>
 
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "off" %>
+  <div class= "row">
+    <%= f.label 'Password confirmation *', class: "label-form col-25 " %>
+    <%= f.password_field :password_confirmation, autocomplete: "off", class: "input-form col-75" %>
   </div>
 
-    <div class="field">
-      <%= f.label :avatar %><br />
-      <%= f.file_field :avatar %><br />
+    <div class= "row">
+      <%= f.label :first_name, class: "label-form col-25 " %>
+      <%= f.text_field :first_name, autocomplete: "off", class: "input-form col-75" %>
+    </div>
+    <div class= "row">
+      <%= f.label :last_name, class: "label-form col-25 " %>
+      <%= f.text_field :last_name, autocomplete: "off", class: "input-form col-75" %>
     </div>
 
+    <div class= "row">
+      <%= f.label :gender, class: "label-form col-25 " %>
+      <%= f.select :gender,  User::GENDER_TYPES, {}, { :class => 'input-form select-form col-75' } %>
+    </div>
+
+    <div class= "row">
+      <%= f.label :country, class: "label-form col-25 " %>
+      <%= country_select("user", "country", {}, { :class => 'input-form select-form col-75' }) %>
+    </div>
+
+    <div class= "row">
+    <%= f.label "Your Birthday ", class: "label-form col-25 " %>
+    <%= f.date_field :birthday, as: :date, value: f.object.try(:strftime,"%d/%m/%Y"), class: "input-form col-75"%>
+    </div>
+
+    <div class= "row">
+      <%= f.label :avatar, class: "label-form col-25 " %>
+      <%= f.file_field :avatar, { :class => 'search-button col-75' } %>
+    </div>
+
+    <div class= "row">
+      <%= f.label "Profile description ", class: "label-form col-25 " %>
+      <%= f.text_area :short_description, autocomplete: "off", class: "text-form col-75" %>
+    </div>
+    <div class= "row">
+      <em class="label-form col-35">The fields marked with '*' are required.</em>
+    </div>
+
+    <br>
   <div class="actions">
-    <%= f.submit "Sign up" %>
+    <h3><%= f.submit "Sign up", class: "big-button link"%></h3>
   </div>
 <% end %>
 

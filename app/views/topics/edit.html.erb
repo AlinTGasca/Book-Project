@@ -1,0 +1,26 @@
+<div class="container-form"><h1>Edit your Topic: <%=link_to @topic.title, topic_path(@topic), class: 'link' %></h1>
+  <%= form_for(@topic, url: topic_update_path(@topic.id), html: {method: "patch"}) do |f| %>
+    <% if @topic.errors.any? %>
+      <div id="error_explanation">
+        <h2>
+          <%= pluralize(@topic.errors.count, "error") %> prohibited
+          this topic from being saved:
+        </h2>
+        <ul>
+          <% @topic.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <div class="row">
+      <%= f.label 'Topic Title ', class: "label-form col-25 " %>
+      <%= f.text_field 'title',class: "input-form col-75 " %>
+    </div>
+    <div class="row">
+      <%= f.label 'Topic Body ', class: "label-form col-25 " %>
+      <%= f.text_area 'body' ,class: "input-form col-75 "%>
+    </div>
+    <br>
+    <%= f.submit 'Save topic', class: "big-button link" %>
+  <% end %></div>

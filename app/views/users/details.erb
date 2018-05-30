@@ -1,17 +1,38 @@
+
 <% if user_signed_in? %>
 
-    <div><h1>Edit book: </h1><br>
-      <%= label_tag "Book Title" %> <%=link_to @book.title, book_path(@book.book_id) %><br>
-      <%= form_tag(book_update_list_adv_path,method: :patch) do %>
-        <p><%= label_tag"Score" %>
-        <%= select_tag 'rating', options_for_select( @ratings.map {|s| [if s.score!=nil
+    <div class="container-form">
+      <h1>Edit your entry in the list for the book <%=link_to @book.title,book_path(@book) %>: </h1>
+      <% if @book.avatar.exists? %>
+        <%= image_tag @book.avatar.url(:medium) %>
+      <%else%> <%= image_tag('No_Image_Available.png', size: "300x300",alt: 'no_image') %>
+      <% end %>
+        <%= form_for(@users_to_book, url: list_book_details_path(@users_to_book.id), html: {method: "patch"}) do |f| %>
+
+        <div class="row"><%= f.label "Score", class: "label-form col-25 " %>
+        <%= f.select 'rating', options_for_select( @ratings.map {|s| [if s.score!=nil
                                                                              s.score
                                                                            else '(Nothing)'
-                                                                           end,s.id]}, @book_rating ) %></p>
-        <p><%= label_tag "Your Status: " %>
-        <%= select_tag 'shelves', options_for_select( @shelves.map {|s| [s.status,s.id]}, @book_shelf ) %></p>
-        <%= submit_tag "Update" %></div>
-        <%= link_to 'Remove', remove_list_path(params[:id_user_book]),
-                    method: :delete, :onclick=> "return confirm('Are you sure you want to remove this book from your list?')"%>
+                                                                           end,s.id]}, @book_rating ),{}, class: "select-form col-75" %></div>
+
+        <div class="row"><%= f.label "Your Status: ", class: "label-form col-25 " %>
+        <%= f.select :shelf, options_for_select( @shelves.map {|s| [s.status,s.id]}, @book_shelf ), {}, class: "select-form col-75" %></div>
+
+        <div class="row">
+        <%= f.label "Started Reading on: ", class: "label-form col-25 " %>
+        <%= f.date_field :start_reading, as: :date, value: try(:strftime,"%d/%m/%Y"), class: "input-form col-75"%>
+        </div>
+        <div class="row">
+        <%= f.label "Finished Reading on: ", class: "label-form col-25 " %>
+        <%= f.date_field :end_reading, as: :date, value: try(:strftime,"%d/%m/%Y"), class: "input-form col-75"%>
+        </div>
+        <div class="row">
+        <%= f.label "Notes: ", class: "label-form col-25 " %>
+        <%= f.text_area :notes, class: "input-form col-75" %>
+        </div>
+        <%= f.submit "Update", class: "big-button link" %>
+        <br>
+        <%= link_to 'Remove', remove_list_path(params[:id_user_book]), :onclick=> "return confirm('Are you sure you want to remove this book from your list?')", class: "link"%>
       <% end %>
+    </div>
 <%end%>

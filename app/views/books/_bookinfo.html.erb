@@ -1,0 +1,104 @@
+<div id="container-book">
+  <div class="centred">
+    <div class="container-title">
+      <h3>
+        <%= @book.title %>
+      </h3>
+      <% if current_user.try(:admin?) %>
+        <%= link_to '✎', edit_book_path(@book.id), :class => "icon-link" %>
+        <%= link_to '🗑 ', book_delete_path(@book.id),
+                    :onclick => "return confirm('Are you sure you want to delete this book from database?')", :class => "icon-link" %>
+      <% end %>
+    </div>
+    <div class="div-padding">
+    <% if @book.avatar.exists? %>
+      <%= image_tag @book.avatar.url(:medium) %>
+    <% else %> <%= image_tag('No_Image_Available.png', size: "300x300", alt: 'no_image') %>
+    <% end %>
+      <br>
+      <% if @book.amazon %>
+      <%=link_to image_tag('buy-amazon-button.png', size: '100x45', alt: 'amazon'), @book.amazon, target: '_blank' %>
+        <% end %>
+    </div>
+  </div>
+  <div class="div-padding">
+  <% if user_signed_in? %>
+    <% if UsersToBook.where(book_id: @book.id, user_id: current_user.id).exists? %>
+      <strong>Edit status:</strong> <br>
+      <%= form_tag(book_update_list_path, method: :patch) do %>
+        <table style="text-align: center">
+          <tr><td><%= label_tag "Your Score" %></td>
+            <td><%= select_tag 'rating', options_for_select(@ratings.map {|s| [if s.score != nil
+                                                                                 s.score
+                                                                               else
+                                                                                 '(Nothing)'
+                                                                               end, s.id]}, @book_rating), class: "selector-form link" %></td></tr>
+          <tr><td><%= label_tag "Your Status" %></td>
+            <td><%= select_tag 'shelves', options_for_select(@shelves.map {|s| [s.status, s.id]}, @book_shelf), class: "selector-form link" %></td></tr>
+          <tr><td><%= submit_tag "Update", class: "post-button link" %></td>
+            <td><%= link_to 'Edit Details', list_book_details_path(@book_list.id) %></td></tr>
+        </table>
+      <% end %>
+    <% else %><strong>Add to list:</strong>
+      <%= form_tag(book_add_list_path, method: :post) do %>
+        <table style="text-align: center">
+          <tr><td><%= label_tag "Your Score" %></td>
+            <td><%= select_tag 'rating', options_for_select(@ratings.map {|s| [if s.score != nil
+                                                                                 s.score
+                                                                               else
+                                                                                 '(Nothing)'
+                                                                               end, s.id]}, @book_rating), class: "selector-form" %></td></tr>
+          <tr><td><%= label_tag "Your Status" %></td>
+            <td><%= select_tag 'shelves', options_for_select(@shelves.map {|s| [s.status, s.id]}, @book_shelf), class: "selector-form" %></tr></tr>
+
+          <tr><td><%= submit_tag "Add", class: "post-button"%></td></tr>
+        </table>
+      <% end %>
+    <% end %>
+  <% end %>
+  <br>
+  <strong>Score: </strong>
+  <% if @avg_rat.nan? %>
+    Nothing
+  <% else %>
+    <%= @avg_rat.round(2) %> (from <%= @ratings_given.size %> users)
+  <% end %>
+  <br>
+  <strong> Published in: </strong>
+  <% if (@book.published) %>
+    <%= @book.published %>
+  <% else %>
+    Unknown
+  <% end %>
+  <br>
+  <strong>Written by: </strong>
+  <% if (@authors) %>
+    <% @authors.each do |author| %>
+      <% if @authors.last != author %>
+        <%= link_to author.firstName + " " + author.lastName, author_path(author) %> ,
+      <% else %>
+        <%= link_to author.firstName + " " + author.lastName, author_path(author) %>
+      <% end
+         end %>
+  <% else %> ?
+  <% end %>
+  <br>
+  <strong>Genres: </strong>
+  <% if @genres %>
+    <% @genres.each do |genre| %>
+      <% if @genres.last != genre %>
+        <%= genre.name %>,
+      <% else %>
+        <%= genre.name %>
+      <% end end %>
+  <% else %> ?
+  <% end %>
+  </div></div>
+<div class="container-book-description">
+
+  <label class="container-title-new"><%= link_to "Main Page", book_path(@book), :class => "link" %></label>
+  <label class="container-title-new"><%= link_to "Editions", book_editions_path(@book), :class => "link" %></label>
+  <label class="container-title-new"><%= link_to "Reviews", book_reviews_path(@book), :class => "link" %></label>
+  <label class="container-title-new"><%= link_to "Recommendations", book_recommandations_path(@book), :class => "link" %></label>
+  <label class="container-title-new"><%= link_to "Book Stats", book_stats_path(@book), :class => "link" %></label>
+</div>

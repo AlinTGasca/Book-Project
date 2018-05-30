@@ -1,16 +1,16 @@
-<div class="container-fluid"><h2>Edit <%= resource_name.to_s.humanize %></h2>
+<div class="container-form"><h2>Edit <%= resource_name.to_s.humanize %></h2>
 
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
   <%= devise_error_messages! %>
-    <div class="field">
-      <%= f.label :username %><br />
-      <%= f.text_field :username, autofocus: true %>
+    <div class= "row">
+      <%= f.label 'Username *', class: "label-form col-25 " %>
+      <%= f.text_field :username, autofocus: true, class: "input-form col-75" %>
     </div>
 
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: "off" %>
+  <div class= "row">
+    <%= f.label 'Email *', class: "label-form col-25 " %>
+    <%= f.email_field :email, autofocus: "off", class: "input-form col-75" %>
   </div>
 
 
@@ -18,38 +18,70 @@
     <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
-    <%= f.password_field :password, autocomplete: "off" %>
+  <div class= "row">
+    <%= f.label 'New password *', class: "label-form col-25 " %>
+    <%= f.password_field :password, autocomplete: "off", class: "input-form col-75" %>
     <% if @minimum_password_length %>
-      <br />
+      
       <em><%= @minimum_password_length %> characters minimum</em>
     <% end %>
+    <i>(leave blank if you don't want to change it)</i>
   </div>
 
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "off" %>
+  <div class= "row">
+    <%= f.label 'New password confirmation *', class: "label-form col-25 " %>
+    <%= f.password_field :password_confirmation, autocomplete: "off", class: "input-form col-75" %>
   </div>
 
-  <div class="field">
-    <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
-    <%= f.password_field :current_password, autocomplete: "off" %>
-  </div>
 
-    <div class="field">
-      <%= f.label :avatar %><br />
-      <%= f.file_field :avatar %><br />
+    <div class= "row">
+      <%= f.label :first_name, class: "label-form col-25 " %>
+      <%= f.text_field :first_name, autocomplete: "off", class: "input-form col-75" %>
     </div>
 
+    <div class= "row">
+      <%= f.label :last_name, class: "label-form col-25 " %>
+      <%= f.text_field :last_name, autocomplete: "off", class: "input-form col-75" %>
+    </div>
+
+    <div class= "row">
+      <%= f.label :gender, class: "label-form col-25 " %>
+      <%= f.select :gender,  User::GENDER_TYPES, {}, { :class => 'input-form select-form col-75' } %>
+    </div>
+
+    <div class= "row">
+      <%= f.label :country, class: "label-form col-25 " %>
+      <%= country_select("user", "country", {}, { :class => 'input-form select-form col-75' }) %>
+    </div>
+
+    <div class= "row">
+    <%= f.label "Your Birthday ", class: "label-form col-25 " %><br>
+    <%= f.date_field :birthday, as: :date, value: f.object.try(:strftime,"%d/%m/%Y"), class: "input-form col-75"%>
+    </div>
+
+    <div class= "row">
+      <%= f.label :avatar, class: "label-form col-25 " %>
+      <%= f.file_field :avatar, { :class => 'search-button col-75' } %>
+    </div>
+
+    <div class= "row">
+      <%= f.label "Profile description ", class: "label-form col-25 " %>
+      <%= f.text_area :short_description, autocomplete: "off", class: "text-form col-75" %>
+    </div>
+<br>
+    <div class= "row">
+      <%= f.label :current_password, class: "label-form col-25 " %>
+      <%= f.password_field :current_password, autocomplete: "off", class: "input-form col-75" %>
+      <i>(we need your current password to confirm your changes)</i>
+    </div>
+    <div class= "row">
+      <em class="label-form col-35">The fields marked with '*' are required.</em>
+    </div>
   <div class="actions">
-    <%= f.submit "Update" %>
+    <h3><%= f.submit "Update", class: "big-button link" %></h3>
   </div>
 <% end %>
 
-<h3>Cancel my account</h3>
 
-<p>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete %></p>
-
-<%= link_to "Back", :back %>
+<%= link_to "Back", :back, class: "link" %>
 </div>

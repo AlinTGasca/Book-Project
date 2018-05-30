@@ -1,0 +1,83 @@
+
+  <div id="container-book">
+    <div class="centred">
+      <div class="container-title"><h1><%= @user.username %>'s profile</h1>
+        <% if user_signed_in? %>
+          <% if current_user != @user %>
+            <% if current_user.friends_with?(@user) %>
+              <%= link_to "Remove Friend", remove_friend_path(@user), class: "link" %>
+            <% elsif current_user.pending_friends.include?(@user) %>
+              <%= link_to "Cancel", cancel_request_path(@user), class: "link" %>
+            <% else %>
+              <%= link_to "Add Friend", add_friend_path(@user), class: "link" %>
+            <% end %>
+          | <%= link_to 'Start Conversation', create_conversation_path(sender_id: current_user.id, receiver_id: @user),target: :_blank, class: "link" %>
+          <%end end%></div>
+      <div class="div-padding">
+        <% if @user.avatar.exists? %>
+          <%= image_tag @user.avatar.url(:medium) %>
+        <%else%> <%= link_to image_tag('No_Image_Available.png', size: "300x300",alt: 'no_image') %>
+        <% end %></div></div>
+    <div class="div-padding">
+      <strong>Real Name:</strong> <% if @user.first_name || @user.last_name %>
+        <%= @user.first_name + ' ' + @user.last_name %>
+      <% else %>
+        Unspecified
+      <% end %>
+      <br>
+      <strong>Joined at:</strong> <%= @user.created_at.to_date.to_s %>
+      <br>
+      <strong>Birthday:</strong> <% if @user.birthday %>
+        <%= @user.birthday %>
+      <% else %>
+        Unspecified
+      <% end %>
+      <br>
+      <strong>Gender:</strong> <% if @user.gender %>
+        <%= @user.gender %>
+      <% else %>
+        Unspecified
+      <% end %>
+      <br>
+      <strong>Lives in:</strong> <% if @user.country!='f' %>
+        <%= @user.country_name %>
+      <% else %>
+        Unspecified
+      <% end %>
+      <br>
+      <strong>Profile Description: </strong> <% if @user.short_description %>
+        <%= simple_format @user.short_description %>
+      <% else %>
+        Unspecified
+      <% end %>
+      <h4>Friends</h4>
+      <div class="out">
+        <% if @user.friends.count > 0 %>
+     <% @user.friends.sample(3).each do |friend| %>
+      <figure class="fig-pic">
+        <% if friend.avatar.exists? %>
+          <%= image_tag friend.avatar.url(:friend) %>
+        <%else%> <%= image_tag('No_Image_Available.png', size: "80x80",alt: 'no_image') %>
+        <% end %>
+        <figcaption class="centred" style="font-size: 12px">
+        <%= link_to friend.username, user_profile_path(friend.username) %>
+        </figcaption>
+      </figure>
+        <% end %>
+          <% else %>
+        This user doesn't have any friends.
+          <% end %>
+      </div>
+      <% if @user.friends.count > 3 %>
+        <%= link_to 'More friends...', user_friends_path %>
+        <% end %>
+    </div></div>
+
+  <div class="container-book-description">
+    <label class="container-title-new"><%= link_to 'Profile', user_profile_path, :class => "link" %></label>
+    <label class="container-title-new"><%= link_to 'Book List', list_path, :class => "link" %></label>
+    <label class="container-title-new"><%= link_to 'Reviews', user_reviews_path, :class => "link" %></label>
+    <label class="container-title-new"><%= link_to 'Friends', user_friends_path, :class => "link" %></label>
+    <label class="container-title-new"><%= link_to 'Recommendations', user_recs_path, :class => "link" %></label>
+    <label class="container-title-new"><%= link_to 'Forum Activity', user_forum_path, :class => "link" %></label>
+  </div>

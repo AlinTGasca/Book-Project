@@ -1,5 +1,51 @@
-<div class="container-fluid"><h1>All users</h1>
-<% @users.each do |user| %>
-  <%= link_to user.username, user_profile_path(user.username) %>
-  <br>
-  <% end %></div>
+<div class="container-text">
+  <div class="container-title">
+    <h1>All users</h1></div>
+  <table style="width:100%">
+    <tr>
+      <th>Avatar</th>
+      <th><% if params[:sort]!='uname' %>
+          <%= link_to 'Username ▼',search_path(:search=>params[:search],:search_for=>'Users',:sort=>'uname'),class: "link"%>
+        <%else%>  <%= link_to 'Username ▲',search_path(:search=>params[:search],:search_for=>'Users',:sort=>'uname_inv'),class: "link"%>
+        <% end %></th>
+      <th><% if params[:sort]!='join' %>
+          <%= link_to 'Joined ▼',search_path(:search=>params[:search],:search_for=>'Users',:sort=>'join'),class: "link"%>
+        <%else%>  <%= link_to 'Joined ▲',search_path(:search=>params[:search],:search_for=>'Users',:sort=>'join_inv'),class: "link"%>
+        <% end %></th>
+      <th><% if params[:sort]!='last_sign' %>
+          <%= link_to 'Last Online ▼',search_path(:search=>params[:search],:search_for=>'Users',:sort=>'last_sign'),class: "link"%>
+        <%else%>  <%= link_to 'Last Online ▲',search_path(:search=>params[:search],:search_for=>'Users',:sort=>'last_sign_inv'),class: "link"%>
+        <% end %></th>
+      <th><% if params[:sort]!='reviews' %>
+          <%= link_to 'Reviews ▼',search_path(:search=>params[:search],:search_for=>'Users',:sort=>'reviews'),class: "link"%>
+        <%else%>  <%= link_to 'Reviews ▲',search_path(:search=>params[:search],:search_for=>'Users',:sort=>'reviews_inv'),class: "link"%>
+        <% end %></th>
+      <th><% if params[:sort]!='reviewscore' %>
+          <%= link_to 'Reviews Popularity ▼',search_path(:search=>params[:search],:search_for=>'Users',:sort=>'reviewscore'),class: "link"%>
+        <%else%>  <%= link_to 'Reviews Popularity ▲',search_path(:search=>params[:search],:search_for=>'Users',:sort=>'reviewscore_inv'),class: "link"%>
+        <% end %></th>
+      <th>Comments On Profile</th>
+    </tr>
+  <% @users.each do |user| %>
+    <tr>
+      <td><% if user.avatar.exists? %>
+          <%= image_tag user.avatar.url(:thumb) %>
+        <%else%> <%= image_tag('No_Image_Available.png', size: "100x100",alt: 'no_image') %>
+        <% end %></td>
+      <td><%= link_to user.username, user_profile_path(user.username) %></td>
+      <td><%= user.created_at %></td>
+      <td><%= user.last_seen %></td>
+      <td><%= Review.where(user_id: user.id).count %></td>
+      <td> <% _reviews = Review.where(user_id: user.id)
+              _sum = 0
+              _reviews.each do |review|
+                _sum = _sum + review.get_likes.size
+                _sum = _sum - review.get_dislikes.size
+              end
+      %>
+        <%= _sum %></td>
+      <td><%= user.comments.count %></td>
+    </tr>
+  <% end %>
+  </table>
+  <%= will_paginate @users , :class=>"centred flickr_pagination"%></div>

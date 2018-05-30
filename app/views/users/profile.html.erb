@@ -1,15 +1,115 @@
-<div class="container-fluid"><h1><%= @user.username %></h1>
+<%= javascript_include_tag "https://www.gstatic.com/charts/loader.js" %>
+<%= javascript_include_tag "application" %>
 
-<br>
-  <% if @user.avatar.exists? %>
-  <%= image_tag @user.avatar.url(:medium) %>
-    <%else%> <%= image_tag('No_Image_Available.png', size: "300x300",alt: 'no_image') %>
-<% end %>
-  <br>
-  Average list score:  <% if @avg_rat.nan? %>
-    Nothing
+<div style="padding-left: 5px; padding-right: 5px; padding-bottom: 5px">
+  <div class="div-container">
+    <%= render 'userinfo' %>
+
+  <div class="container-reviews container-text">
+    <div class="container-title"><h4>Users Stats</h4></div>
+    <div class="div-padding">
+    <h4 class="centred">Number of books in every list</h4>
+    <%= bar_chart @status%>
+    <h4 class="centred">Number of books by rating</h4>
+    <%= bar_chart @ratings%>
+      <strong>Total List Entries:</strong> <%= @reading + @completed + @dropped + @p2r %>
+      <br>
+    <strong>Average list score:</strong>  <% if @avg_rat.nan? %>
+      Nothing
     <% else %>
-    <%= @avg_rat%>
+      <%= (@avg_rat).round(2) %>
     <% end %>
-  <br>
-  <%= link_to 'Lista', list_path %></div>
+      <br>
+
+      <strong>Reviews: </strong> <%= @reviews.count %>
+      <br>
+      <strong>Reviews Score: </strong> <%= @review_sum %>
+      <br>
+      <strong>Forum topics: </strong> <%= @topic_count %>
+      <br>
+      <strong>Comments: </strong> <%= @comments_count %>
+      <br>
+      <strong>Recommandations: </strong> <%= @recs_count %>
+    <br>
+    <br>
+    </div>
+  </div>
+
+    <div class="container-reviews">
+      <div class="container-title-new">
+        <h4 class="same-row-title">Comments</h4>
+        <label class="dropdown" class="dropdown" style="float: right; padding-top: 5px;"><div class="dropbtn link">Sort comments ▼</div> <div class="dropdown-content">
+          <%= link_to "Best", user_profile_path(@user) %>
+          <%= link_to "Most Likes", user_profile_path(@user, :sort => "like") %>
+          <%= link_to "Most Disikes", user_profile_path(@user, :sort => "dislike") %>
+          <%= link_to "Oldest", user_profile_path(@user, :sort => "old") %>
+          <%= link_to "Newest", user_profile_path(@user, :sort => "new") %>
+        </div>
+        </label>
+      </div>
+      <% if @comments.count > 0 %>
+        <% @comments.each do |comment| %>
+        <div class="container-text div-padding">
+            <% if User.find(comment.user_id).avatar.exists? %>
+              <%= image_tag User.find(comment.user_id).avatar.url(:mini) %>
+            <% else %> <%= image_tag('No_Image_Available.png', size: "30x30", alt: 'no_image') %>
+            <% end %>
+            <%= link_to comment.user.username, user_profile_path(comment.user.username) %>
+            <%= simple_format comment.body %>
+            <br>
+            <em>Posted at <%= comment.created_at %></em>
+            <br>
+            <%= comment.get_upvotes.size.to_s + " out of " + (comment.get_downvotes.size + comment.get_upvotes.size).to_s + " users found this comment helpful. " %>
+
+            <br>
+            <% if user_signed_in? %>
+
+              <div style="display: inline">
+                <div style="float: left">
+                  <% if current_user.voted_up_on?(comment) %>
+                    <%= link_to '👍',comment_like_path(comment), method: :get, class:"icon-on" %>
+                  <% else %>
+                    <%= link_to '👍',comment_like_path(comment), method: :get, class:"icon" %>
+                  <% end %>
+
+
+
+                  <% if current_user.voted_down_on?(comment) %>
+                    <%= link_to '👎',comment_dislike_path(comment), method: :get, class:"icon-on" %>
+                  <% else %>
+                    <%= link_to '👎',comment_dislike_path(comment), method: :get, class:"icon" %>
+                  <% end%>
+                </div>
+
+                <div style="float: right">
+                  <% if current_user.id == comment.user_id || current_user.try(:admin?) %>
+                    <%= link_to '✎', comment_edit_path(comment), class:"icon" %>
+                    <%= link_to '🗑️', comment_delete_path(comment),
+                                :onclick => "return confirm('Are you sure you want to delete this comment?')", class:"icon" %>
+                  <% end %>
+                </div>
+              </div>
+              <br>
+              <br>
+            <%   end %>
+        </div>
+        <% end %>
+
+        <%= will_paginate @comments , :class=>"centred flickr_pagination"%>
+      <% else %>
+        <div class="container-text div-padding"> No comments written so far for this book.</div>
+      <% end %>
+      <% if user_signed_in? %>
+        <div class="container-title-new">
+          <%= form_tag(comment_new_user_path, method: :post) do %>
+            <h4>Write a Comment</h4>
+            <div class="centred">
+              <%= text_area_tag 'body',nil,class: "comment-form",cols: 110, rows: 4 %>
+              <br>
+            <strong><%= submit_tag "Post", class: "big-button link"%></strong></div></div>
+          <% end %>
+      <% end %>
+    </div>
+  </div>
+
+</div>

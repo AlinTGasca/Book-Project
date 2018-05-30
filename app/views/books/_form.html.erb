@@ -14,33 +14,43 @@
     </div>
   <% end %>
 
-  <p>
-    <%= form.label "Title" %><br>
-    <%= form.text_field :title %>
-  </p>
+  <div class= "row">
+    <%= form.label "Title *", class: "label-form col-25 " %>
+    <%= form.text_field :title, class: "input-form col-75" %>
+  </div>
 
-  <p>
-    <%= form.label "Description" %><br>
-    <%= form.text_area :description %>
-  </p>
+  <div class= "row">
+    <%= form.label "Description", class: "label-form col-25 " %>
+    <%= form.text_area :description, class: "input-form col-75" %>
+  </div>
 
-  <p>
-    <%= form.label "Published on: " %><br>
-    <%= form.date_field :published, as: :date, value: form.object.try(:strftime,"%m/%d/%Y")%>
-  </p>
+  <div class= "row">
+    <%= form.label "Published on: ", class: "label-form col-25 " %>
+    <%= form.date_field :published, as: :date, value: form.object.try(:strftime,"%m/%d/%Y"), class: "input-form col-75"%>
+  </div>
 
-  <p>
-    <%= form.label "Select authors (hold Ctrl to select multiple): " %><br>
+  <div class= "row">
+    <%= form.label "Select authors (hold Ctrl to select multiple): ", class: "label-form col-25 " %>
     <%= form.select :authors,
                     options_for_select(@authors.map {|s| [s.lastName+" "+s.firstName,s.id]},
                                        @book_authors),
-                    {} , {:multiple => true, :size => 5} %>
-      </p>
+                    {} , {:multiple => true, :size => 5, class: "input-form col-75"} %>
+      </div>
 
-  <div class="field">
-    <%= form.label :avatar %><br />
-    <%= form.file_field :avatar %><br />
+  <div class= "row">
+    <%= form.label "Select genres (hold Ctrl to select multiple): ", class: "label-form col-25 " %>
+    <%= form.select :genres,
+                    options_for_select(@genres.map {|s| [s.name,s.id]},
+                                       @book_genres),
+                    {} , {:multiple => true, class: "input-form col-75"}%>
   </div>
 
-  <%= form.submit %>
+  <div class="row">
+    <%= form.label :avatar, class: "label-form col-25 " %><br />
+    <%= form.file_field :avatar, class: "search-button link col-75" %>
+  </div>
+  <div class= "row">
+    <em class="label-form col-35">The fields marked with '*' are required.</em>
+  </div>
+  <%= form.submit class: "big-button link"%>
 <% end %>

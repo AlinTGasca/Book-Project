@@ -1,0 +1,34 @@
+<div class="container-text">
+  <div class="container-title"><h1 class="same-row-title">
+    <%= @category.name %>
+  </h1>
+    <div class="dropdown" style="float: right; padding-top: 25px;">
+    <label><%= link_to 'New topic', topic_new_path, class: 'link' %>,
+      <%= link_to 'Back to forum', forum_path, class: 'link' %></label></div></div>
+  <table style="width:100%; text-align: left">
+  <tr>
+    <th class="th-left-first">Topic title</th>
+    <th class="th-left">Author</th>
+    <th class="th-left">Created at</th>
+    <th class="th-left">Replies</th>
+    <th class="th-left">Last post</th>
+  </tr>
+    <% @topics.each do |topic| %>
+      <tr>
+
+        <td class="td-p"><%= link_to topic.title, topic_path(topic)%></td>
+
+        <td class="td-p"><%= link_to topic.user.username, user_profile_path(topic.user.username) %></td>
+
+        <td class="td-p"><%= topic.created_at %></td>
+
+        <td class="td-p"><%= topic.comments.count %></td>
+
+        <td class="td-p"><%_last = Topic.last_post(topic.id) %>
+          at <%= _last.created_at %>, by <%=link_to _last.user.username, user_profile_path(_last.user.username) %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+ <%= will_paginate @topics , :class=>"centred flickr_pagination"%>
+</div>

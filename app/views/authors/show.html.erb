@@ -1,4 +1,7 @@
-<p>
+<div class="div-container">
+  <div id="container-book">
+    <div class="centred">
+      <div class="container-title">
   <h3>
     <% if @author.firstName%>
   <%= @author.firstName + " " + @author.lastName %>
@@ -6,19 +9,18 @@
     <%= @author.lastName %>
       <% end %>
   </h3>
-<div class="container-fluid"><% if current_user.try(:admin?) %>
-<%= link_to 'Edit', edit_author_path(@author.id) %> |
-<%= link_to 'Destroy', author_delete_path(@author.id),
+<% if current_user.try(:admin?) %>
+<%= link_to '✎', edit_author_path(@author.id), class: "icon-link" %>
+<%= link_to '🗑', author_delete_path(@author.id),
             method: :delete,
-            :onclick=> "return confirm('Are you sure you want to delete this author from the database?')" %>
-  <% end %>
-</p>
-  <br>
+            :onclick=> "return confirm('Are you sure you want to delete this author from the database?')", class: "icon-link" %>
+  <% end %></div>
+      <div class="div-padding">
   <% if @author.avatar.exists? %>
     <%= image_tag @author.avatar.url(:medium) %>
-  <%else%> <%= image_tag('No_Image_Available.png', size: "300x300",alt: 'no_image') %>
-  <% end %>
-<p>
+      <%else%> <%= image_tag('No_Image_Available.png', size: "300x300",alt: 'no_image') %>
+        <% end %></div></div>
+    <div class="div-padding">
  <strong> Born:</strong> <% if (@author.birth) %>
   <%= @author.birth%>
     <% else %>
@@ -35,38 +37,157 @@
     <% else %>
   Unknown
     <% end %>
-</p>
-
-<p>
-  <strong>Books written: </strong> <% if (@books) %>
-    <% @books.each do |book| %>
-      <% if @books.last != book %>
-      <%= link_to book.title, book_path(book) %> ,
-        <% else %>
-        <%= link_to book.title, book_path(book) %>
-    <% end
-      end
-       end%>
-
-</p>
-  <br>
-  Comments:
-  <br>
-  <% @author.comments.each do |comment| %>
-    ------------------------
     <br>
-    <% if User.find(comment.user_id).avatar.exists? %>
-    <%= image_tag User.find(comment.user_id).avatar.url(:mini) %>
-  <%else%> <%= image_tag('No_Image_Available.png', size: "100x100",alt: 'no_image') %>
+    <strong>Gender:</strong> <% if @author.gender %>
+      <%= @author.gender %>
+    <% else %>
+      Unspecified
     <% end %>
-    <%= link_to comment.user.username, user_profile_path(comment.user.username) %>
-    <%= comment.body%>
     <br>
-    <em>Posted at <%=comment.created_at%></em>
-    <br>
-    ------------------------
-    <br>
-  <% end %>
-
-
+    <strong>Lives in:</strong> <% if @author.country!='f' %>
+      <%= @author.country_name %>
+    <% else %>
+      Unspecified
+    <% end %>
+  </div>
+  </div>
+<div class="container-reviews container-text">
+  <div class="container-title div-padding">
+    <h3><% if @author.firstName%>
+        <%= @author.firstName + " " + @author.lastName %>
+      <% else %>
+        <%= @author.lastName%>
+      <%end%>'s books</h3></div>
+      <% if @books.count > 0 %>
+    <table width="100%">
+      <tr>
+        <th>Image</th>
+        <th><% if params[:sort_b]!='title' %>
+            <%= link_to 'Title ▼',author_path(:id=>params[:id],:sort_b=>'title'),class: "link"%>
+          <%else%>  <%= link_to 'Title ▲',author_path(:id=>params[:id],:sort_b=>'title_inv'),class: "link"%>
+          <% end %></th>
+        <th>Description</th>
+        <th><% if params[:sort_b]!='published' %>
+            <%= link_to 'Published ▼',author_path(:id=>params[:id],:sort_b=>'published'),class: "link"%>
+          <%else%>  <%= link_to 'Published ▲',author_path(:id=>params[:id],:sort_b=>'published_inv'),class: "link"%>
+          <% end %></th>
+        <th><% if params[:sort_b]!='score' %>
+            <%= link_to 'Score ▼',author_path(:id=>params[:id],:sort_b=>'score'),class: "link"%>
+          <%else%>  <%= link_to 'Score ▲',author_path(:id=>params[:id],:sort_b=>'score_inv'),class: "link"%>
+          <% end %></th>
+        <th><% if params[:sort_b]!='popularity' %>
+            <%= link_to 'Members ▼',author_path(:id=>params[:id],:sort_b=>'popularity'),class: "link"%>
+          <%else%>  <%= link_to 'Members ▲',author_path(:id=>params[:id],:sort_b=>'popularity_inv'),class: "link"%>
+          <% end %></th>
+        <th>Reviews</th>
+        <th>Comments</th>
+      </tr>
+      <% @books.each do |book| %>
+        <tr>  <td>
+      <% if book.avatar.exists? %>
+        <%= image_tag book.avatar.url(:thumb) %>
+      <%else%> <%= image_tag('No_Image_Available.png', size: "100x100",alt: 'no_image') %>
+      <% end %></td>
+        <td><%= link_to book.title, book_path(book) %></td>
+        <td><%= truncate(book.description, :length => 60) %>
+          <% if book.description.length > 60 %>
+            <%=link_to 'Read more', book_path(book) %></td>
+          <% end %>
+          <td> <% if book.published %>
+              <%= book.published %>
+            <% else %>
+              ?
+            <% end %>
+          </td>
+          <td><% @avg_rat = Book.score(book.id)%>
+            <%= (@avg_rat).round(2) %></td>
+          <td><%= UsersToBook.joins(:book).where(book_id: book.id).count %></td>
+          <td><%= Review.joins(:book).where(book_id: book.id).count %></td>
+          <td><%= book.comments.count %></td>
+          </tr>
+        <%end%>
+    </table>
+        <% else %>
+      No books found.
+        <% end %>
+    </div>
 </div>
+  <div class="container-reviews">
+    <br>
+    <div class="container-title-new">
+      <h4 class="same-row-title">Comments</h4>
+
+      <label class="dropdown" style="float: right; padding-top: 5px;"><div class="dropbtn link">Sort comments ▼</div> <div class="dropdown-content">
+          <%= link_to "Best", author_path(@author) %>
+          <%= link_to "Most Likes", author_path(@author, :sort => "like") %>
+          <%= link_to "Most Disikes", author_path(@author, :sort => "dislike") %>
+          <%= link_to "Oldest", author_path(@author, :sort => "old") %>
+          <%= link_to "Newest", author_path(@author, :sort => "new") %>
+        </div>
+      </label>
+    </div>
+
+    <% if @comments.count > 0 %>
+      <% @comments.each do |comment| %>
+        <div class="container-text div-padding">
+          <% if User.find(comment.user_id).avatar.exists? %>
+            <%= image_tag User.find(comment.user_id).avatar.url(:mini) %>
+          <% else %> <%= image_tag('No_Image_Available.png', size: "30x30", alt: 'no_image') %>
+          <% end %>
+          <%= link_to comment.user.username, user_profile_path(comment.user.username) %>
+          <%= simple_format comment.body %>
+          <br>
+          <em>Posted at <%= comment.created_at %></em>
+          <br>
+          <%= comment.get_upvotes.size.to_s + " out of " + (comment.get_downvotes.size + comment.get_upvotes.size).to_s + " users found this comment helpful. " %>
+
+          <br>
+          <% if user_signed_in? %>
+
+            <div style="display: inline">
+              <div style="float: left">
+                <% if current_user.voted_up_on?(comment) %>
+                  <%= link_to '👍',comment_like_path(comment), method: :put, class:"icon-on" %>
+                <% else %>
+                  <%= link_to '👍',comment_like_path(comment), method: :put, class:"icon" %>
+                <% end %>
+
+
+
+                <% if current_user.voted_down_on?(comment) %>
+                  <%= link_to '👎',comment_dislike_path(comment), method: :put, class:"icon-on" %>
+                <% else %>
+                  <%= link_to '👎',comment_dislike_path(comment), method: :put, class:"icon" %>
+                <% end%>
+              </div>
+
+              <div style="float: right">
+                <% if current_user.id == comment.user_id || current_user.try(:admin?) %>
+                  <%= link_to '✎', comment_edit_path(comment), class:"icon" %>
+                  <%= link_to '🗑️', comment_delete_path(comment),
+                              :onclick => "return confirm('Are you sure you want to delete this comment?')", class:"icon" %>
+                <% end %>
+              </div>
+            </div>
+          <%   end %>
+          <br>
+          <br>
+        </div>
+      <% end %>
+      <div class="container-text"><%= will_paginate @comments , :class=>"centred flickr_pagination"%></div>
+    <% else %>
+      <div class="container-text">No comments written so far for this book.</div>
+    <% end %>
+    <% if user_signed_in? %>
+      <div class="container-title-new ">
+        <%= form_tag(comment_new_author_path, method: :post) do %>
+          <h4>Write a Comment</h4>
+          <div class="centred">
+            <%= text_area_tag 'body',nil,class: "comment-form",cols: 112, rows: 4 %>
+            <br>
+            <strong><%= submit_tag "Post", class: "big-button link"%></strong></div></div>
+        <% end %>
+    <% end %>
+  </div>
+</div>
+<br>

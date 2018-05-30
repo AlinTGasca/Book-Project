@@ -1,0 +1,112 @@
+
+
+<div class="container-title container-form"><h1>Activity Feed</h1></div>
+
+<% if @activities.count > 0 %>
+
+  <% @activities.each do |activity|%>
+    <% if activity.trackable %>
+    <div class="container-text div-padding container-post">
+    <% if User.find(activity.owner_id).avatar.exists? %>
+      <%= image_tag User.find(activity.owner_id).avatar.url(:mini) %>
+    <% else %> <%= image_tag('No_Image_Available.png', size: "30x30", alt: 'no_image') %>
+    <% end %>
+      <% if activity.key=="comment.commented_on_book" %>
+        <% _book = Book.find(activity.trackable.commentable_id) %>
+    <%= link_to activity.owner.username, user_profile_path(activity.owner.username) %> commented on <% if _book.avatar.exists? %>
+          <%= image_tag _book.avatar.url(:mini) %>
+        <% else %> <%= image_tag('No_Image_Available.png', size: "30x30", alt: 'no_image') %>
+          <% end %><%=link_to _book.title, book_path(_book) %>'s main page.
+    <br>
+        <%= simple_format activity.trackable.body %>
+        <% elsif activity.key=="comment.commented_on_author" %>
+        <% _author = Author.find(activity.trackable.commentable_id) %>
+        <%= link_to activity.owner.username, user_profile_path(activity.owner.username) %> commented on <% if _author.avatar.exists? %>
+          <%= image_tag _author.avatar.url(:mini) %>
+        <% else %> <%= image_tag('No_Image_Available.png', size: "30x30", alt: 'no_image') %>
+          <% end %><%=link_to _author.firstName + " " + _author.lastName, author_path(_author) %>'s main page.
+        <br>
+        <%= simple_format activity.trackable.body %>
+      <% elsif activity.key=="comment.commented_on_user" %>
+        <% _user = User.find(activity.trackable.commentable_id) %>
+        <%= link_to activity.owner.username, user_profile_path(activity.owner.username) %> commented on <% if _user.avatar.exists? %>
+          <%= image_tag _user.avatar.url(:mini) %>
+        <% else %> <%= image_tag('No_Image_Available.png', size: "30x30", alt: 'no_image') %>
+          <% end %><%=link_to _user.username, user_profile_path(_user) %>'s profile.
+        <br>
+        <%= simple_format activity.trackable.body %>
+      <% elsif activity.key=="comment.commented_on_topic" %>
+        <%= link_to activity.owner.username, user_profile_path(activity.owner.username) %> replied on the topic
+        <%=link_to activity.trackable.commentable.title, topic_path(activity.trackable.commentable.id) %>.
+        <br>
+        <%= simple_format activity.trackable.body %>
+        <% elsif activity.key=="review.review"  %>
+        <% _book = Book.find(activity.trackable.book_id) %>
+        <%= link_to activity.owner.username, user_profile_path(activity.owner.username) %> reviewd the book <% if _book.avatar.exists? %>
+          <%= image_tag _book.avatar.url(:mini) %>
+        <% else %> <%= image_tag('No_Image_Available.png', size: "30x30", alt: 'no_image') %>
+          <% end %><%=link_to _book.title, book_path(_book) %>.
+        <br>
+        <strong>Score:</strong>  <%= activity.trackable.rating.score %>
+        <br>
+        <%= simple_format activity.trackable.content %>
+        <% elsif activity.key=="users_to_book.added_book" %>
+        <%= link_to activity.owner.username, user_profile_path(activity.owner.username) %> added the book <% if activity.trackable.book.avatar.exists? %>
+          <%= image_tag activity.trackable.book.avatar.url(:mini) %>
+        <% else %> <%= image_tag('No_Image_Available.png', size: "30x30", alt: 'no_image') %>
+          <% end %><%=link_to  activity.trackable.book.title, book_path( activity.trackable.book_id) %> to their list
+        <% if activity.trackable.rating.score %>
+        with the score of <%= activity.trackable.rating.score %>
+          <% end %>
+        .
+        <br>
+        <%elsif activity.key=="recommandation.recommandation" %>
+        <%= link_to activity.owner.username, user_profile_path(activity.owner.username) %> recommended the book <% if activity.trackable.first_book.avatar.exists? %>
+          <%= image_tag activity.trackable.first_book.avatar.url(:mini) %>
+        <% else %> <%= image_tag('No_Image_Available.png', size: "30x30", alt: 'no_image') %>
+          <% end %><%=link_to  activity.trackable.first_book.title, book_path( activity.trackable.first_book_id) %>
+        for the book <% if activity.trackable.second_book.avatar.exists? %>
+          <%= image_tag activity.trackable.second_book.avatar.url(:mini) %>
+        <% else %> <%= image_tag('No_Image_Available.png', size: "30x30", alt: 'no_image') %>
+          <% end %><%=link_to  activity.trackable.second_book.title, book_path( activity.trackable.second_book_id) %>.
+        <br>
+
+      <%elsif activity.key=="topic.topic" %>
+        <%= link_to activity.owner.username, user_profile_path(activity.owner.username) %> created the topic  <%= link_to activity.trackable.title, topic_path(activity.trackable) %>
+        in the category <%= link_to activity.trackable.category.name, category_path(activity.trackable.category) %>.
+        <br>
+        <%= simple_format activity.trackable.body %>
+      <% elsif activity.key=="user.friends" %>
+        <% _user = User.find(activity.trackable.id) %>
+        <%= link_to activity.owner.username, user_profile_path(activity.owner.username) %> and <% if _user.avatar.exists? %>
+          <%= image_tag _user.avatar.url(:mini) %>
+        <% else %> <%= image_tag('No_Image_Available.png', size: "30x30", alt: 'no_image') %>
+          <% end %><%=link_to _user.username, user_profile_path(_user) %> are now friends.
+        <br>
+    <% end %>
+
+
+      <br>
+      <em>Added at <%= activity.created_at %></em>
+      <br>
+    </div>
+    <% else
+         if activity.trackable_type=="Comment"
+           Comment.delete_activities(activity.trackable_id)
+         elsif activity.trackable_type=="Review"
+           Review.delete_activities(activity.trackable_id)
+         elsif activity.trackable_type=="UsersToBook"
+           UsersToBook.delete_activities(activity.trackable_id)
+         elsif activity.trackable_type=="Recommandation"
+           Recommandation.delete_activities(activity.trackable_id)
+         elsif activity.trackable_type=="Topic"
+           Topic.delete_activities(activity.trackable_id)
+         end %>
+  <% end end%>
+
+<% else %>
+
+<div class="container-post container-text div-padding ">
+  Your friends and followers don't have anything to show yet.
+</div>
+<% end %>

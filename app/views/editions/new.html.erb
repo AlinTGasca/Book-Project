@@ -1,0 +1,56 @@
+<div class="container-form"><h1>New Edition for <%=link_to @book.title,book_path(@book) %></h1>
+  <% if @book.avatar.exists? %>
+    <%= image_tag @book.avatar.url(:medium) %>
+  <%else%> <%= image_tag('No_Image_Available.png', size: "300x300",alt: 'no_image') %>
+  <% end %>
+  <%= form_tag(edition_create_path,method: :post, multipart: true) do %>
+    <% if @edition.errors.any? %>
+      <div id="error_explanation">
+        <h2>
+          <%= pluralize(@edition.errors.count, "error") %> prohibited
+          this book edition from being saved:
+        </h2>
+        <ul>
+          <% @edition.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <div class= "row">
+    <%= label_tag 'Edition Title *',nil, class: "label-form col-25 " %>
+    
+    <%= text_field_tag :title,nil, class: "input-form col-75" %>
+    </div>
+
+    <div class= "row">
+    <%= label_tag "Published on ",nil, class: "label-form col-25 " %>
+    <%= date_field_tag :published, nil,class: "input-form col-75", value: try(:strftime,"%m/%d/%Y")%>
+    </div>
+
+    <div class= "row">
+      <%= label_tag :country,nil, class: "label-form col-25 " %>
+      <%= select_tag "country", options_from_collection_for_select(ISO3166::Country.countries.sort_by(&:name), 'un_locode', 'name'),{ :class => 'input-form select-form col-75' } %>
+    </div>
+
+    <div class= "row">
+      <%= label_tag "Published by ",nil, class: "label-form col-25 " %>
+      <%= text_field_tag :publisher,nil, class: "input-form col-75" %>
+    </div>
+
+    <div class= "row">
+      <%= label_tag "Number of pages ",nil, class: "label-form col-25 " %>
+      <%= number_field_tag :pages,nil, class: "input-form col-75" %>
+    </div>
+
+    <div class= "row">
+    <%= label_tag :avatar,nil, class: "label-form col-25 " %><br />
+    <%= file_field_tag :avatar, { :class => 'search-button col-75' }%>
+    </div>
+
+    <div class= "row">
+      <em class="label-form col-35">The fields marked with '*' are required.</em>
+    </div>
+
+    <%= submit_tag 'Add Edition', class: "big-button link"%>
+  <% end %></div>

@@ -1,0 +1,72 @@
+<div>
+  <%= render 'userinfo' %>
+
+<div class="container-reviews">
+<div class="container-title-new">
+  <h4 class="same-row-title">Reviews (<%= @reviews.count %>)</h4>
+  <label class="dropdown" style="float: right; padding-top: 5px">
+  <div class="dropbtn link" >Sort reviews ▼</div> <div class="dropdown-content">
+  <%= link_to "Best", user_reviews_path(@user) %>
+  <%= link_to "Most Likes", user_reviews_path(@user, :sort => "like") %>
+  <%= link_to "Most Disikes", user_reviews_path(@user, :sort => "dislike") %>
+  <%= link_to "Oldest", user_reviews_path(@user, :sort => "old") %>
+  <%= link_to "Newest", user_reviews_path(@user, :sort => "new") %>
+  </div>
+  </label>
+</div>
+<% if @reviews.count > 0 %>
+  <% @reviews.each do |review| %>
+    <div class="container-text div-padding">
+      <% if Book.find(review.book_id).avatar.exists? %>
+        <%= image_tag Book.find(review.book_id).avatar.url(:thumb), :style=>"float: left" %>
+      <% else %> <%= image_tag('No_Image_Available.png', size: "100x100", alt: 'no_image', style: "float: left" ) %>
+      <% end %>
+      <strong>Review for: </strong><%= link_to review.book.title, book_path(review.book_id) %>
+      <br>
+      <strong>Score:</strong>  <%= review.rating.score %>
+      <br>
+      <strong>Posted : </strong><%= review.created_at %>
+      <br>
+      <em><%= review.get_upvotes.size.to_s + " out of " + (review.get_downvotes.size + review.get_upvotes.size).to_s + " users found this review helpful. " %></em>
+
+      <br>
+      <br>
+      <%= simple_format review.content %>
+      <% if user_signed_in? %>
+
+        <div style="display: inline">
+          <div style="float: left">
+            <% if current_user.voted_up_on?(review) %>
+              <%= link_to '👍',review_like_path(review), method: :put, class:"icon-on" %>
+            <% else %>
+              <%= link_to '👍',review_like_path(review), method: :put, class:"icon" %>
+            <% end %>
+
+
+
+            <% if current_user.voted_down_on?(review) %>
+              <%= link_to '👎',review_dislike_path(review), method: :put, class:"icon-on" %>
+            <% else %>
+              <%= link_to '👎',review_dislike_path(review), method: :put, class:"icon" %>
+            <% end%>
+          </div>
+
+          <div style="float: right">
+            <% if current_user.id == review.user_id || current_user.try(:admin?) %>
+              <%= link_to '✎', review_edit_path(review), class:"icon" %>
+              <%= link_to '🗑️', review_delete_path(review),
+                          :onclick => "return confirm('Are you sure you want to delete this review?')", class:"icon" %>
+            <% end %>
+          </div>
+        </div>
+      <%   end %>
+      <br>
+      <br>
+    </div>
+  <% end %>
+    <div class="container-text"><%= will_paginate @reviews , :class=>"centred flickr_pagination"%></div>
+<% else %><div class="container-text">This user doesn't have any reviews.</div>
+  <br>
+<% end %>
+</div>
+</div>

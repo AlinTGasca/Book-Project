@@ -1,10 +1,62 @@
-<div class="container-fluid"><h1>
+<div class="container-text">
+<div class="container-title"><h1 class="same-row-title">
   All books
 </h1>
-
-<br>
-<br>
+  <label class="dropdown" style="float: right; padding-top: 25px;">
+    <div class="dropbtn link">Genres ▼</div> <div class="dropdown-content">
+    <% @genres.each do |genre| %>
+      <%= link_to genre.name, search_path(:search=>params[:search],:search_for=>'Books',:genre=>genre.id,:sort=>'title') %>
+    <% end %>
+  </div>
+  </label>
+</div>
+  <table style="width:100%">
+      <tr>
+        <th>Image</th>
+        <th><% if params[:sort]!='title' %>
+            <%= link_to 'Title ▼',search_path(:search=>params[:search],:search_for=>'Books',:sort=>'title'),class: "link"%>
+          <%else%>  <%= link_to 'Title ▲',search_path(:search=>params[:search],:search_for=>'Books',:sort=>'title_inv'),class: "link"%>
+          <% end %></th>
+        <th>Description</th>
+        <th><% if params[:sort]!='published' %>
+            <%= link_to 'Published ▼',search_path(:search=>params[:search],:search_for=>'Books',:sort=>'published'),class: "link"%>
+          <%else%>  <%= link_to 'Published ▲',search_path(:search=>params[:search],:search_for=>'Books',:sort=>'published_inv'),class: "link"%>
+          <% end %></th>
+        <th><% if params[:sort]!='score' %>
+            <%= link_to 'Score ▼',search_path(:search=>params[:search],:search_for=>'Books',:sort=>'score'),class: "link"%>
+          <%else%>  <%= link_to 'Score ▲',search_path(:search=>params[:search],:search_for=>'Books',:sort=>'score_inv'),class: "link"%>
+          <% end %></th>
+        <th><% if params[:sort]!='popularity' %>
+            <%= link_to 'Members ▼',search_path(:search=>params[:search],:search_for=>'Books',:sort=>'popularity'),class: "link"%>
+          <%else%>  <%= link_to 'Members ▲',search_path(:search=>params[:search],:search_for=>'Books',:sort=>'popularity_inv'),class: "link"%>
+          <% end %></th>
+        <th>Reviews</th>
+        <th>Comments</th>
+      </tr>
 <% @books.each do |book| %>
-  <%= link_to book.title, book_path(book) %>
-  <br>
-  <% end %></div>
+      <tr>  <td>
+        <% if book.avatar.exists? %>
+          <%= image_tag book.avatar.url(:thumb) %>
+        <%else%> <%= image_tag('No_Image_Available.png', size: "100x100",alt: 'no_image') %>
+        <% end %></td>
+        <td><%= link_to book.title, book_path(book) %></td>
+        <td><%= truncate(book.description, :length => 80) %>
+          <% if book.description.length > 80 %>
+            <%=link_to 'Read more', book_path(book) %></td>
+          <% end %>
+          <td> <% if book.published %>
+              <%= book.published %>
+            <% else %>
+              ?
+            <% end %>
+          </td>
+          <td><% @avg_rat = Book.score(book.id)%>
+            <%= (@avg_rat).round(2) %></td>
+          <td><%= UsersToBook.joins(:book).where(book_id: book.id).count %></td>
+          <td><%= Review.joins(:book).where(book_id: book.id).count %></td>
+          <td><%= book.comments.count %></td>
+          </tr>
+  <% end %>
+  </table>
+  <%= will_paginate @books , :class=>"centred flickr_pagination"%>
+</div>

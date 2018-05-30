@@ -1,0 +1,47 @@
+<div class="div-container">
+  <%= render "bookinfo" %>
+  <div class="container-reviews">
+    <div class="container-title-new">
+      <h4 class="same-row-title">Recommendations</h4>
+      <% if user_signed_in? %>
+    <label class="container-title-new" style="float: right; padding-top: 5px"><%= link_to 'New Recommendation', rec_new_path(params[:id]), :class=>"link" %></label>
+    <% end %>
+        </div>
+    <% if @recs.first %>
+      <% @recs.each do |rec| %>
+        <% _destroy = 0 %>
+        <div class="container-text div-padding">
+          <% if rec.second_book.avatar.exists? %>
+            <%= image_tag rec.second_book.avatar.url(:thumb), :style=>"float: left" %>
+          <% else %> <%= image_tag('No_Image_Available.png', size: "100x100", alt: 'no_image', style: "float: left" ) %>
+          <% end %> <strong>Title:</strong> <%=link_to rec.second_book.title , book_path(rec.second_book)%>
+          <br>
+          <em>Recommended by <%= rec.count_sec %> users.</em>
+          <br><% _users = Recommandation.where(first_book_id: rec.first_book_id, second_book_id: rec.second_book_id).pluck(:user_id) %>
+         <% if _users.count > 0 %>
+          <% _users.each do |user| %>
+            <% _usr = User.find(user)%>
+              <% if _usr == current_user %>
+                <% _destroy = 1 %>
+                <% end %>
+              <%= link_to _usr.username, user_profile_path(_usr) %>
+              <% if user != _users.last %>,
+                <% end %>
+            <% end %>
+            <% end %>
+
+          <br>
+          <br>
+          <%if _destroy == 1 %>
+            <%= link_to 'Remove Recommendation', rec_destroy_path(rec),
+            :onclick => "return confirm('Are you sure you want to remove your recommandation?')" %>
+          <% end %>
+          <br>
+        </div>
+      <% end %>
+      <div class="container-text"><%= will_paginate @recs , :class=>"centred flickr_pagination"%></div>
+      <% else %>
+      <div class="container-text"> No recommendations made so far for this book.</div>
+      <% end %>
+  </div>
+</div>

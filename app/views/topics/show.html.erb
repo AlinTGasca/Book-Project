@@ -1,0 +1,133 @@
+<div class="container-title container-form"><h1>Topic title: <%= @topic.title %></h1>
+<label style="float: left">Back to: <%= link_to @topic.category.name , category_path(@topic.category), class: "link"%>,
+  <%= link_to 'Forum',forum_path, class: "link"%></label>
+<br></div>
+
+<div class="container-text div-padding container-post">
+  <% if @topic.user.avatar.exists? %>
+    <%= image_tag @topic.user.avatar.url(:thumb), :style=>"float: left" %>
+  <% else %> <%= image_tag('No_Image_Available.png', size: "100x100", alt: 'no_image', style: "float: left" ) %>
+  <% end %>
+  <strong>Posted by: </strong> <%= link_to @topic.user.username, user_profile_path(@topic.user.username) %>
+  <br>
+  <em>Created at </em><%= @topic.created_at %></em>
+  <br>
+  <%= @topic.get_upvotes.size.to_s + " out of " + (@topic.get_downvotes.size + @topic.get_upvotes.size).to_s + " users found this topic helpful. " %>
+  <br>
+  <br>
+  <br>
+
+  <%= simple_format @topic.body %>
+  <br>
+  <% if user_signed_in? %>
+
+    <div style="display: inline">
+      <div style="float: left">
+        <% if current_user.voted_up_on?(@topic) %>
+          <%= link_to '👍',topic_like_path(@topic), method: :put, class:"icon-on" %>
+        <% else %>
+          <%= link_to '👍',topic_like_path(@topic), method: :put, class:"icon" %>
+        <% end %>
+
+
+
+        <% if current_user.voted_down_on?(@topic) %>
+          <%= link_to '👎',topic_dislike_path(@topic), method: :put, class:"icon-on" %>
+        <% else %>
+          <%= link_to '👎',topic_dislike_path(@topic), method: :put, class:"icon" %>
+        <% end%>
+      </div>
+
+      <div style="float: right">
+        <% if current_user.id == @topic.user_id || current_user.try(:admin?) %>
+          <%= link_to '✎', topic_edit_path(@topic), class:"icon" %>
+          <%= link_to '🗑️', topic_delete_path(@topic),
+                      :onclick => "return confirm('Are you sure you want to delete this topic?')", class:"icon" %>
+        <% end %>
+      </div>
+    </div>
+        <%end%>
+  <br>
+  <br>
+</div>
+
+<div class="container-post">
+    <br>
+    <div class="container-title-new continer-form">
+      <h4 class="same-row-title">Replies</h4>
+      <label class="dropdown " style="float: right; padding-top: 5px;">
+        <div class="dropbtn link">Sort comments ▼</div> <div class="dropdown-content">
+        <%= link_to "Best", topic_path(@topic) %>
+        <%= link_to "Most Likes", topic_path(@topic, :sort => "like") %>
+        <%= link_to "Most Disikes", topic_path(@topic, :sort => "dislike") %>
+        <%= link_to "Oldest", topic_path(@topic, :sort => "old") %>
+        <%= link_to "Newest", topic_path(@topic, :sort => "new") %>
+      </div>
+      </label>
+    </div>
+    <% if @comments.count > 0 %>
+      <% @comments.each do |comment| %>
+        <div class="container-text div-padding container-post">
+          <% if User.find(comment.user_id).avatar.exists? %>
+            <%= image_tag User.find(comment.user_id).avatar.url(:thumb), style: "float: left" %>
+          <% else %> <%= image_tag('No_Image_Available.png', size: "100x100", alt: 'no_image', style: "float: left") %>
+          <% end %>
+          <strong>Reply by:</strong><%= link_to comment.user.username, user_profile_path(comment.user.username) %>
+          <br>
+          <em>Posted at <%= comment.created_at %></em>
+          <br>
+          <%= comment.get_upvotes.size.to_s + " out of " + (comment.get_downvotes.size + comment.get_upvotes.size).to_s + " users found this comment helpful. " %>
+
+          <br>
+          <br>
+          <br>
+          <%= simple_format comment.body %>
+          <br>
+          <% if user_signed_in? %>
+
+            <div style="display: inline">
+              <div style="float: left">
+                <% if current_user.voted_up_on?(comment) %>
+                  <%= link_to '👍',comment_like_path(comment), method: :put, class:"icon-on" %>
+                <% else %>
+                  <%= link_to '👍',comment_like_path(comment), method: :put, class:"icon" %>
+                <% end %>
+
+
+
+                <% if current_user.voted_down_on?(comment) %>
+                  <%= link_to '👎',comment_dislike_path(comment), method: :put, class:"icon-on" %>
+                <% else %>
+                  <%= link_to '👎',comment_dislike_path(comment), method: :put, class:"icon" %>
+                <% end%>
+              </div>
+
+              <div style="float: right">
+                <% if current_user.id == comment.user_id || current_user.try(:admin?) %>
+                  <%= link_to '✎', comment_edit_path(comment), class:"icon" %>
+                  <%= link_to '🗑️', comment_delete_path(comment),
+                              :onclick => "return confirm('Are you sure you want to delete this comment?')", class:"icon" %>
+                <% end %>
+              </div>
+            </div>
+            <br>
+            <br>
+          <%   end %>
+        </div>
+      <% end %>
+    <div class="container-text container-post"><%= will_paginate @comments , :class=>"centred flickr_pagination"%></div>
+    <% else %>
+      <div class="container-text div-padding">No comments written so far for this topic.</div>
+    <% end %>
+  <% if user_signed_in? %>
+    <div class="container-title-new">
+      <%= form_tag(comment_new_topic_path, method: :post) do %>
+        <h4>Write a Comment</h4>
+        <div class="centred">
+          <%= text_area_tag 'body',nil,class: "comment-form",cols: 116, rows: 4 %>
+          <br>
+        <strong><%= submit_tag "Post", class:"big-button link"%></strong></div></div>
+      <% end %>
+  <% end %>
+  </div>
+<br>

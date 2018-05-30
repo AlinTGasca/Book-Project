@@ -1,0 +1,26 @@
+<div class="container-form"><h1>New Recommandation for <%=link_to @book.title,book_path(@book), class: 'link' %></h1>
+  <% if @book.avatar.exists? %>
+    <%= image_tag @book.avatar.url(:medium) %>
+  <%else%> <%= image_tag('No_Image_Available.png', size: "300x300",alt: 'no_image') %>
+  <% end %>
+  <%= form_tag(rec_create_path,method: :post) do %>
+    <% if @rec.errors.any? %>
+      <div id="error_explanation">
+        <h2>
+          <%= pluralize(@rec.errors.count, "error") %> prohibited
+          this review from being saved:
+        </h2>
+        <ul>
+          <% @rec.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <div class= "row">
+      <%= label_tag 'Select Recommanded Book ',nil, class: "label-form col-25 "%>
+      <%= select_tag 'recommandation', options_for_select( @books.map {|s| [s.title,s.id]}),class: "input-form col-75 " %>
+    </div>
+    <br>
+    <%= submit_tag 'Add', class: "big-button link" %>
+  <% end %></div>

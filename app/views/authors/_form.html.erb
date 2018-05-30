@@ -14,35 +14,49 @@
     </div>
   <% end %>
 
-  <p>
-    <%= form.label "First Name" %><br>
-    <%= form.text_field :firstName %>
-  </p>
-
-  <p>
-    <%= form.label "Last Name" %><br>
-    <%= form.text_field :lastName %>
-  </p>
-
-  <p>
-    <%= form.label :bios %><br>
-    <%= form.text_area :bios %>
-  </p>
-
-  <p>
-    <%= form.label "Birth Date" %><br>
-    <%= form.date_field :birth, as: :date, value: form.object.try(:strftime,"%m/%d/%Y")%>
-  </p>
-
-  <p>
-    <%= form.label "Death Date" %><br>
-    <%= form.date_field :death %>
-  </p>
-
-  <div class="field">
-    <%= form.label :avatar %><br />
-    <%= form.file_field :avatar %><br />
+  <div class= "row">
+    <%= form.label "First Name", class: "label-form col-25 "  %>
+    <%= form.text_field :firstName, class: "input-form col-75" %>
   </div>
 
-  <%= form.submit %>
+  <div class= "row">
+    <%= form.label "Last Name *", class: "label-form col-25 "  %>
+    <%= form.text_field :lastName, class: "input-form col-75" %>
+  </div>
+
+  <div class= "row">
+    <%= form.label :gender, class: "label-form col-25 " %>
+    <%= form.select :gender,  User::GENDER_TYPES, {}, { :class => 'input-form select-form col-75' } %>
+  </div>
+
+  <div class= "row">
+    <%= form.label :country, class: "label-form col-25 " %>
+    <%= country_select("author", "country", {}, { :class => 'input-form select-form col-75' }) %>
+  </div>
+
+  <div class= "row">
+    <%= form.label :bios, class: "label-form col-25 "  %>
+    <%= form.text_area :bios, class: "input-form col-75" %>
+  </div>
+
+  <div class= "row">
+    <%= form.label "Birth Date", class: "label-form col-25 "  %>
+    <%= form.date_field :birth, as: :date, value: form.object.try(:strftime,"%m/%d/%Y"), class: "input-form col-75"%>
+  </div>
+
+  <div class= "row">
+    <%= form.label "Death Date", class: "label-form col-25 "  %>
+    <%= form.date_field :death, class: "input-form col-75" %>
+  </div>
+
+  <div class="row">
+    <%= form.label :avatar, class: "label-form col-25 "  %>
+    <%= form.file_field :avatar, { :class => 'search-button col-75' } %>
+  </div>
+
+  <div class= "row">
+    <em class="label-form col-35">The fields marked with '*' are required.</em>
+  </div>
+
+  <%= form.submit class: 'big-button link' %>
 <% end %>

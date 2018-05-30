@@ -1,0 +1,21 @@
+<div class="container-form"><h1>Friend Requests</h1>
+  <% if @requests.count > 0 %>
+  <% @requests.each do |friend| %>
+    <div class="row">
+      <div class="left">
+    <% if friend.avatar.exists? %>
+      <%= image_tag friend.avatar.url(:thumb) %>
+    <%else%> <%= image_tag('No_Image_Available.png', size: "100x100",alt: 'no_image') %>
+      <% end %>
+    <%= link_to friend.username, user_profile_path(friend.username), class: "link" %>
+      </div>
+      <div class="right-accept">
+    <%= link_to "Accept", accept_request_path(friend.id), class: "big-button link" %>
+      <%= link_to "Decline", decline_request_path(friend.id), class: "big-button link" %>
+      </div>
+    </div>
+    <% end %>
+    <% else %>
+  No friend requests recieved so far.
+  <% end %>
+  </div>

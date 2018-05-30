@@ -1,0 +1,38 @@
+<div>
+<%= render 'userinfo' %>
+  <div class="container-reviews">
+    <div class="container-title-new">
+      <h4>Recommandations (<%= @recs.count %>)</h4>
+    </div>
+    <% if @recs.count > 0 %>
+  <% @recs.each do |activity| %>
+    <% if activity.trackable %>
+      <div class="container-text div-padding">
+        <%=  activity.owner.username %> recommended the book <% if activity.trackable.first_book.avatar.exists? %>
+          <%= image_tag activity.trackable.first_book.avatar.url(:mini) %>
+        <% else %> <%= image_tag('No_Image_Available.png', size: "30x30", alt: 'no_image') %>
+          <% end %><%=link_to  activity.trackable.first_book.title, book_path( activity.trackable.first_book_id) %>
+        for the book <% if activity.trackable.second_book.avatar.exists? %>
+          <%= image_tag activity.trackable.second_book.avatar.url(:mini) %>
+        <% else %> <%= image_tag('No_Image_Available.png', size: "30x30", alt: 'no_image') %>
+          <% end %><%=link_to  activity.trackable.second_book.title, book_path( activity.trackable.second_book_id) %>.
+    <br>
+        <br>
+        <%if current_user.id==activity.owner_id %>
+          <%= link_to 'Remove Recommandation', rec_destroy_path(activity.trackable),
+                      :onclick => "return confirm('Are you sure you want to remove your recommandation?')" %>
+        <% end %>
+        <br>
+        <em>Added at <%= activity.created_at %></em>
+        <br>
+      </div>
+     <% elsif activity.trackable_type=="Recommandation"
+      Recommandation.delete_activities(activity.trackable_id)
+      end %>
+  <% end %>
+      <div class="container-text"><%= will_paginate @recs , :class=>"centred flickr_pagination"%></div>
+    <% else %>
+      <div class="container-text"> No recommendations made by this user so far.</div>
+    <% end %>
+  </div>
+</div>

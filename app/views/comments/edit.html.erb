@@ -1,0 +1,22 @@
+<div class="container-form"><h1>Edit your comment for </h1>
+  <%= form_for(@comment, url: comment_edit_path(@comment.id), html: {method: "patch"}) do |f| %>
+    <% if @comment.errors.any? %>
+      <div id="error_explanation">
+        <h2>
+          <%= pluralize(@comment.errors.count, "error") %> prohibited
+          this comment from being saved:
+        </h2>
+        <ul>
+          <% @comment.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+    <div class="row">
+    <%= f.label 'Comment: ', class:"label-form col-25" %>
+    <%= f.text_area 'body', class: "input-form col-75" %>
+    </div>
+    <br>
+    <%= f.submit 'Save comment', class: "big-button" %>
+  <% end %></div>

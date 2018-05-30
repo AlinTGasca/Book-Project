@@ -1,4 +1,8 @@
-<div class="container-fluid"><h1>New Review for <%= @book.title %></h1>
+<div class="container-form"><h1>New Review for <%=link_to @book.title,book_path(@book) %></h1>
+  <% if @book.avatar.exists? %>
+    <%= image_tag @book.avatar.url(:medium) %>
+  <%else%> <%= image_tag('No_Image_Available.png', size: "300x300",alt: 'no_image') %>
+  <% end %>
   <%= form_tag(review_create_path,method: :post) do %>
     <% if @review.errors.any? %>
       <div id="error_explanation">
@@ -13,15 +17,17 @@
         </ul>
       </div>
     <% end %>
-    <br>
-    <%= label_tag 'Select Score: '%>
+    <div class= "row">
+    <%= label_tag 'Select Score ',nil, class: "label-form col-25 "%>
     <%= select_tag 'rating', options_for_select( @ratings.map {|s| [if s.score!=nil
                                                                        s.score
                                                                      else '(Nothing)'
-                                                                     end,s.id]}) %>
+                                                                     end,s.id]}),class: "input-form col-75 " %>
+    </div>
+    <div class= "row">
+    <%= label_tag 'Review Content ',nil, class: "label-form col-25 " %>
+    <%= text_area_tag 'content',nil,class: "input-form col-75 " %>
+    </div>
     <br>
-    <%= label_tag 'Review Content: ' %>
-    <%= text_area_tag 'content' %>
-    <br>
-    <%= submit_tag 'Add review' %>
+    <%= submit_tag 'Add review', class: "big-button link" %>
   <% end %></div>

@@ -1,0 +1,27 @@
+<%= javascript_include_tag "https://www.gstatic.com/charts/loader.js" %>
+<%= javascript_include_tag "application" %>
+<div>
+  <%= render 'bookinfo' %>
+  <div class="container-reviews container-text">
+    <div class="container-title"><h4>Book stats</h4></div>
+    <div class="div-padding">
+    <h4>List Status:</h4>
+    <%= bar_chart UsersToBook.joins(:book,:shelf).select("users_to_books.id").where(book_id: @book.id).group('shelves.status').count %>
+
+
+  <h4>Ratings breakdown: </h4>
+  <%= bar_chart UsersToBook.joins(:book,:rating).select("books.id").where(book_id: @book.id).group('ratings.score').count%>
+
+    <h4>Popularity by country:</h4>
+    <%= geo_chart User.joins(:users_to_books).where(users_to_books: {book_id: @book.id}).group(:country).count %>
+  <br>
+  <strong>Members:</strong> <%= @members %>
+  <br>
+  <strong>Reviews:</strong> <%= @review_count %>
+  <br>
+  <strong>Comments:</strong> <%= @comment_count %>
+   <br>
+      <strong>Editions:</strong> <%= Edition.where(book_id: @book.id).count %>
+  </div>
+</div>
+</div>

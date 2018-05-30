@@ -5,18 +5,18 @@ class ReviewsController < ApplicationController
   before_action :review_list, only: [:new]
   def new
     @review = Review.new
-    @ratings = Rating.all
+    @ratings = Rating.all.where.not(score: nil)
     @book = Book.find(params[:book_id])
   end
 
 
   def create
     @review = Review.new(:content=>params[:content],:rating_id=>params[:rating],:book_id=>params[:book_id],:user_id=>current_user.id)
-    @ratings = Rating.all
+    @ratings = Rating.all.where.not(score: nil)
     @book = Book.find(params[:book_id])
-    @ratings = Rating.all
     if @review.valid?
       @review.save
+      @review.create_activity(:review, :owner => current_user)
       redirect_to book_path(params[:book_id]), notice: 'Your review has been posted.'
     else
       render 'new'
@@ -26,7 +26,7 @@ class ReviewsController < ApplicationController
   def edit
     @review = Review.find(params[:review_id])
     if (current_user.id == (@review.user_id) || current_user.try(:admin?))
-    @ratings = Rating.all
+      @ratings = Rating.all.where.not(score: nil)
     @book = Book.find(@review.book_id)
     else redirect_to book_path(@review.book_id), :alert => "You don't have the rights to acces this page."
       end
@@ -34,7 +34,7 @@ class ReviewsController < ApplicationController
 
   def update
     @review = Review.find(params[:review_id])
-    @ratings = Rating.all
+    @ratings = Rating.all.where.not(score: nil)
     if (current_user.id == (@review.user_id) || current_user.try(:admin?))
     @book = Book.find(@review.book_id)
     if @review.update(:content=>params[:review][:content],:rating_id=>params[:review][:rating])
@@ -50,22 +50,33 @@ class ReviewsController < ApplicationController
     @review = Review.find(params[:review_id])
     if (current_user.id == (@review.user_id) || current_user.try(:admin?))
       @review.destroy
-      redirect_to book_path(@review.book_id), :notice => "The book has been removed from your list."
+      Review.delete_activities(@review.id)
+      redirect_to book_path(@review.book_id), :notice => "Your review has been deleted."
     else redirect_to book_path(@review.book_id), :alert => "You don't have the rights to acces this page."
     end
   end
+
   def like
     @review = Review.find(params[:review_id])
-    @review.upvote_by current_user
+    if current_user.voted_up_on?(@review)
+      @review.unliked_by current_user
+    else
+      @review.upvote_by current_user
+    end
     redirect_back fallback_location: root_path
+
   end
 
   def dislike
     @review = Review.find(params[:review_id])
-    @review.downvote_by current_user
+    if current_user.voted_down_on?(@review)
+      @review.undisliked_by current_user
+    else
+      @review.downvote_by current_user
+    end
     redirect_back fallback_location: root_path
   end
-
+  
   def is_user
     if !user_signed_in?
       redirect_to root_path, :alert => "You don't have the rights to acces this page."

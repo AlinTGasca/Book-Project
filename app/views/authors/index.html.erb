@@ -1,10 +1,43 @@
-<div class="container-fluid"><h1>
+<div class="container-text">
+  <div class="container-title"><h1>
   All authors
-</h1>
-
-<br>
-<br>
+  </h1></div>
+  <table style="width:100%">
+    <tr>
+      <th>Image</th>
+      <th><% if params[:sort]!='fname' %>
+          <%= link_to 'First Name ▼',search_path(:search=>params[:search],:search_for=>'Authors',:sort=>'fname'),class: "link"%>
+        <%else%>  <%= link_to 'First Name ▲',search_path(:search=>params[:search],:search_for=>'Authors',:sort=>'fname_inv'),class: "link"%>
+        <% end %></th>
+      <th><% if params[:sort]!='lname' %>
+          <%= link_to 'Last Name ▼',search_path(:search=>params[:search],:search_for=>'Authors',:sort=>'lname'),class: "link"%>
+        <%else%>  <%= link_to 'Last Name ▲',search_path(:search=>params[:search],:search_for=>'Authors',:sort=>'lname_inv'),class: "link"%>
+        <% end %></th>
+      <th>Bios</th>
+      <th><% if params[:sort]!='birth' %>
+          <%= link_to 'Birth Date ▼',search_path(:search=>params[:search],:search_for=>'Authors',:sort=>'birth'),class: "link"%>
+        <%else%>  <%= link_to 'Birth Date ▲',search_path(:search=>params[:search],:search_for=>'Authors',:sort=>'birth_inv'),class: "link"%>
+        <% end %></th>
+      <th>Comments</th>
+    </tr>
 <% @authors.each do |author| %>
-  <%= link_to author.firstName+ " " + author.lastName, author_path(author) %>
-  <br>
-  <% end %></div>
+    <tr> <td><% if author.avatar.exists? %>
+        <%= image_tag author.avatar.url(:thumb) %>
+      <%else%> <%= image_tag('No_Image_Available.png', size: "100x100",alt: 'no_image') %>
+      <% end %></td>
+      <td><%= link_to author.firstName, author_path(author) %></td>
+      <td><%= link_to author.lastName, author_path(author) %></td>
+      <td><%= truncate(author.bios, :length => 80) %>
+        <% if author.bios.length > 80 %>
+          <%=link_to 'Read more', author_path(author) %>
+        <% end %></td>
+      <td><% if author.birth %>
+          <%= author.birth %>
+        <% else %>
+          ?
+        <% end %></td>
+
+      <td><%= author.comments.count%></td>
+    </tr>
+  <% end %>
+  </table><%= will_paginate @authors , :class=>"centred flickr_pagination"%></div>

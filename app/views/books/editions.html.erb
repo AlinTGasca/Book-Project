@@ -1,0 +1,107 @@
+<div>
+  <div class="div-container">
+    <%= render "bookinfo" %>
+
+    <div class="container-reviews">
+
+
+
+
+      <div class="container-text">
+        <div class="container-title">
+          <h4 class="same-row-title">Editions</h4>
+          <% if current_user.try(:admin?) %>
+          <label class="container-title-new" style="float: right; padding-top: 5px"><%= link_to 'Add New Edition' , edition_new_path(@book), class: "link" %></label>
+        <% end %>
+            </div>
+        <% if @editions.count > 0 %>
+      <table style="width: 100%">
+        <tr>
+          <th>
+            Image
+          </th>
+          <th>
+            <% if params[:sort]!='title' %>
+              <%= link_to 'Title ▼',book_editions_path(:id=>params[:id],:sort=>'title'),class: "link"%>
+            <%else%>  <%= link_to 'Title ▲',book_editions_path(:id=>params[:id],:sort=>'title_inv'),class: "link"%>
+            <% end %>
+          </th>
+          <th>
+            <% if params[:sort]!='published' %>
+              <%= link_to 'Published ▼',book_editions_path(:id=>params[:id],:sort=>'published'),class: "link"%>
+            <%else%>  <%= link_to 'Published ▲',book_editions_path(:id=>params[:id],:sort=>'published_inv'),class: "link"%>
+            <% end %>
+          </th>
+          <th>
+            <% if params[:sort]!='country' %>
+            <%= link_to 'Country ▼',book_editions_path(:id=>params[:id],:sort=>'country'),class: "link"%>
+            <%else%>  <%= link_to 'Country ▲',book_editions_path(:id=>params[:id],:sort=>'country_inv'),class: "link"%>
+            <% end %>
+          </th>
+          <th>
+            <% if params[:sort]!='publisher' %>
+            <%= link_to 'Publisher ▼',book_editions_path(:id=>params[:id],:sort=>'publisher'),class: "link"%>
+            <%else%>  <%= link_to 'Publisher ▲',book_editions_path(:id=>params[:id],:sort=>'publisher_inv'),class: "link"%>
+              <%end%>
+          </th>
+          <th>
+            Number of pages
+          </th>
+          <% if current_user.try(:admin?) %>
+          <th>
+            Edit details
+          </th>
+            <% end %>
+  <% @editions.each do |edition| %>
+        <tr>
+          <td>
+    <% if edition.avatar.exists? %>
+      <%= image_tag edition.avatar.url(:thumb) %>
+    <%else%> <%= image_tag('No_Image_Available.png', size: "100x100",alt: 'no_image') %>
+            <% end %></td>
+         <td>
+        <%= edition.title %>
+         </td>
+         <td>
+    <% if edition.pubslished %>
+    <%= edition.pubslished %>
+          <%else%> Unknown
+           <% end %></td>
+        <td>
+          <% if edition.country != 'f' %>
+            <%= edition.country_name %>
+          <%else%> Unknown
+          <% end %>
+        </td>
+         <td>
+          <% if edition.publisher != "" %>
+            <%= edition.publisher %>
+          <%else%> Unknown
+          <% end %>
+         </td>
+         <td>
+          <% if edition.pages %>
+            <%= edition.pages.round %>
+          <%else%> Unknown
+          <% end %>
+         </td>
+          <% if current_user.try(:admin?) %>
+         <td>
+      <%= link_to '✎', edition_edit_path(edition), class:"icon" %>
+      <%= link_to '🗑', edition_delete_path(edition),
+                  method: :delete,
+                  :onclick=> "return confirm('Are you sure you want to delete this edition?')", class: "icon" %>
+         </td>
+          <% end%>
+          </tr>
+      <% end %>
+      </table>
+          <% else %>
+          <div class="container-text div-padding">
+            No other editions found for this book.
+          </div>
+        <% end %>
+      </div>
+    </div>
+</div>
+</div>
